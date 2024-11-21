@@ -14,7 +14,7 @@ from tgbot.bot import dp
 from src.myredis import redis_fastapi
 import asyncio
 import time
-from logger import logger
+from src.logger import logger
 
 templates = Jinja2Templates(directory="src/templates")
 
