@@ -19,7 +19,7 @@ async def send_log_to_telegram(message):
 
 def send_log(message):
     loop = asyncio.get_event_loop()
-    # loop.create_task(send_log_to_telegram(message))
+    loop.create_task(send_log_to_telegram(message))
 
 def logging_setup():
     format_info = "<green>{time:HH:mm:ss.SS}</green> | <blue>{level}</blue> | <level>{message}</level>"
