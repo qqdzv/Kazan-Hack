@@ -22,7 +22,7 @@ async def start_tgbot():
     
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    time.sleep(3)
+    time.sleep(2)
     bot_task = asyncio.create_task(start_tgbot())
     RedisCacheBackend(redis_fastapi)
     yield
