@@ -14,6 +14,7 @@ from tgbot.bot import dp
 from src.myredis import redis_fastapi
 import asyncio
 import time
+from logger import logger
 
 templates = Jinja2Templates(directory="src/templates")
 
@@ -26,20 +27,20 @@ async def handle_connection(websocket, path):
     try:
         async for message in websocket:
             # Получаем сообщение от клиента
-            print(f"Received message: {message}")
+            logger.info(f"Received message: {message}")
 
             # Рассылаем это сообщение всем остальным клиентам
             for client in clients:
                 if client != websocket:
                     await client.send(message)
     except websockets.exceptions.ConnectionClosed:
-        print("Connection closed")
+        logger.info("Connection closed")
     finally:
         # Убираем клиента из списка при закрытии соединенияx
         clients.remove(websocket)
 
 async def start_websocket_server():
-    server = await websockets.serve(handle_connection, "skin-cancer.ru", 5000)
+    server = await websockets.serve(handle_connection, "localhost", 5000)
     print("WebSocket server started at ws://:5000")
     await server.wait_closed()
 

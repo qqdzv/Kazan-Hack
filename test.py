@@ -26,7 +26,7 @@
 # # Запуск WebSocket сервера на порту 5000
 # async def start_server():
 #     server = await websockets.serve(handle_connection, "localhost", 5000)
-#     print("WebSocket server started at ws://localhost:5000")
+#     print("WebSocket server started at ws://sk:5000")
 #     await server.wait_closed()
 
 # # Запуск сервера
