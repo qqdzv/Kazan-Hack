@@ -35,12 +35,12 @@ async def handle_connection(websocket, path):
     except websockets.exceptions.ConnectionClosed:
         print("Connection closed")
     finally:
-        # Убираем клиента из списка при закрытии соединения
+        # Убираем клиента из списка при закрытии соединенияx
         clients.remove(websocket)
 
 async def start_websocket_server():
-    server = await websockets.serve(handle_connection, "testtest", 5000)
-    print("WebSocket server started at ws://localhost:5000")
+    server = await websockets.serve(handle_connection, "skin-cancer.ru", 5000)
+    print("WebSocket server started at ws://:5000")
     await server.wait_closed()
 
 # Асинхронный контекст жизни FastAPI для запуска WebSocket сервера
