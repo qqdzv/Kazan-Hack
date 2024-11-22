@@ -10,13 +10,10 @@
         <main class="chatBody">
             <div v-for="(message, index) in messages" :key="index" :class="['message', { 'message-user': message.sender_type === 'user', 'message-doctor': message.sender_type === 'doctor' }]">
                 <div class="messageBox">
-                    <!-- Отображение изображения -->
                     <img v-if="message.image_base64" :src="message.image_base64" alt="Отправленное изображение" class="messageImage" />
-                    <!-- Отображение текста сообщения -->
                     <p v-if="message.text">{{ message.text }}</p>
                 </div>
 
-                <!-- Отображение времени сообщения -->
                 <span :class="['time', { 'time-user': message.sender_type === 'user', 'time-doctor': message.sender_type === 'doctor' }]">
                     {{ message.created_at ? formatDate(message.created_at).time : '' }}
                 </span>
@@ -26,15 +23,11 @@
         <div class="inputBar">
             <CustomIcon id="file" :width="32" :height="32" class="fileIcon" @click="triggerFileInput"></CustomIcon>
             <img v-if="loaded" :src="completePic" :width="25" />
-
             <textarea type="text" placeholder="Сообщение" @keyup.enter="sendMessage" @input="autoResize" v-model="newMessage"></textarea>
-
             <CustomIcon id="send" :width="32" :height="32" class="sendIcon" @click="sendMessage" />
         </div>
 
         <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="onFileChange" />
-
-        <!-- <div v-if="imageUrl" class="imagePreview"></div> -->
         <div v-if="isLoadingImage" class="loader"></div>
         <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="onFileChange" />
     </div>
@@ -91,7 +84,6 @@ const fetchUserById = async (user_id: number) => {
     }
 };
 
-// Функция для отправки сообщения
 const sendMessage = async () => {
     if (!newMessage.value.trim() && !imageUrl.value) return; // сообщение или изображение обязательно
 
@@ -118,7 +110,6 @@ const sendMessage = async () => {
     }
 };
 
-// Получение сообщений
 const fetchMessages = async (receiverId: number) => {
     try {
         const response = await api.getData<Message[]>(`/messages/get_chat/${receiverId}`);
@@ -136,6 +127,7 @@ const fetchMessages = async (receiverId: number) => {
 };
 
 const triggerFileInput = () => {
+    console.log('triggerFileInput called');
     fileInput.value?.click();
 };
 
@@ -154,7 +146,6 @@ const onFileChange = (event: Event) => {
     }
 };
 
-// При монтировании компонента загружаем данные
 onMounted(async () => {
     receiverId.value = Number(route.params.id);
     console.log(receiverId.value);
@@ -166,12 +157,10 @@ onMounted(async () => {
     onUnmounted(() => clearInterval(interval));
 });
 
-// Функция для возвращения назад
 const goBack = () => {
     router.go(-1);
 };
 
-// Автоматическое изменение высоты textarea
 const autoResize = (event: Event) => {
     const textarea = event.target as HTMLTextAreaElement;
     textarea.style.height = '31px';

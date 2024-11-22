@@ -55,6 +55,7 @@ interface AllChats {
 }
 
 export interface Message {
+    image_base64: string;
     id: number;
     sender_id: number;
     sender_type: string;
@@ -130,7 +131,6 @@ const filteredChats = computed(() => {
 const navigateToChat = (chatId: number) => {
     router.push(`/chat/${chatId}`);
     console.log(toRaw(filteredChats));
-    
 };
 
 onMounted(fetchAllChats);
