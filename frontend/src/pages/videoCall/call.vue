@@ -1,43 +1,46 @@
-<script setup lang="js">
+<script setup lang="ts">
 import MainButton from '@/ui/MainButton.vue';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
-const localStream = ref(null);
-const peerConnection = ref(null);
+const localStream = ref<MediaStream | null>(null); // Типизация с учетом null
+const peerConnection = ref<RTCPeerConnection | null>(null); // Типизация с учетом null
 const socket = new WebSocket('ws://skin-cancer.ru:5000');
 const router = useRouter();
 
-const localVideo = ref(null);
-const remoteVideo = ref(null);
+const localVideo = ref<HTMLVideoElement | null>(null); // Типизация с учетом null
+const remoteVideo = ref<HTMLVideoElement | null>(null); // Типизация с учетом null
 const calling = ref(false);
-
-// const props = defineProps({
-//     docName: String,
-//     docQual: String
-// })
 
 const config = {
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
-const startMedia = async () => {
+// Функция для старта медиа потока
+const startMedia = async (): Promise<void> => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localStream.value = stream;
-        if (localVideo.value) {
-            localVideo.value.srcObject = stream;
+        if (localVideo.value && localStream.value) {
+            localVideo.value.srcObject = localStream.value;
         }
     } catch (error) {
         console.error('Error accessing media devices.', error);
     }
 };
 
-const startCall = () => {
+// Функция для старта звонка
+const startCall = (): void => {
+    if (!localStream.value) return; // Проверка на null
+
     peerConnection.value = new RTCPeerConnection(config);
 
     // Отправляем медиапоток на удаленный клиент
-    localStream.value.getTracks().forEach((track) => peerConnection.value.addTrack(track, localStream.value));
+    localStream.value.getTracks().forEach((track) => {
+        if (peerConnection.value) {
+            peerConnection.value.addTrack(track, localStream.value!); // Убираем null с помощью оператора !
+        }
+    });
 
     // Обработка ICE кандидатов
     peerConnection.value.onicecandidate = (event) => {
@@ -56,12 +59,12 @@ const startCall = () => {
     // Создание предложения (offer)
     peerConnection.value
         .createOffer()
-        .then((offer) => peerConnection.value.setLocalDescription(offer))
+        .then((offer) => peerConnection.value?.setLocalDescription(offer))
         .then(() => {
             socket.send(
                 JSON.stringify({
                     type: 'offer',
-                    offer: peerConnection.value.localDescription,
+                    offer: peerConnection.value?.localDescription,
                 }),
             );
         })
@@ -76,33 +79,39 @@ socket.onmessage = (event) => {
 
     switch (message.type) {
         case 'offer':
-            peerConnection.value
-                .setRemoteDescription(new RTCSessionDescription(message.offer))
-                .then(() => peerConnection.value.createAnswer())
-                .then((answer) => peerConnection.value.setLocalDescription(answer))
-                .then(() => {
-                    socket.send(
-                        JSON.stringify({
-                            type: 'answer',
-                            answer: peerConnection.value.localDescription,
-                        }),
-                    );
-                })
-                .catch((error) => {
-                    console.error('Error handling offer:', error);
-                });
+            if (peerConnection.value) {
+                peerConnection.value
+                    .setRemoteDescription(new RTCSessionDescription(message.offer))
+                    .then(() => peerConnection.value?.createAnswer())
+                    .then((answer) => peerConnection.value?.setLocalDescription(answer))
+                    .then(() => {
+                        socket.send(
+                            JSON.stringify({
+                                type: 'answer',
+                                answer: peerConnection.value?.localDescription,
+                            }),
+                        );
+                    })
+                    .catch((error) => {
+                        console.error('Error handling offer:', error);
+                    });
+            }
             break;
 
         case 'answer':
-            peerConnection.value.setRemoteDescription(new RTCSessionDescription(message.answer)).catch((error) => {
-                console.error('Error setting remote description:', error);
-            });
+            if (peerConnection.value) {
+                peerConnection.value.setRemoteDescription(new RTCSessionDescription(message.answer)).catch((error) => {
+                    console.error('Error setting remote description:', error);
+                });
+            }
             break;
 
         case 'ice-candidate':
-            peerConnection.value.addIceCandidate(new RTCIceCandidate(message.candidate)).catch((error) => {
-                console.error('Error adding ICE candidate:', error);
-            });
+            if (peerConnection.value) {
+                peerConnection.value.addIceCandidate(new RTCIceCandidate(message.candidate)).catch((error) => {
+                    console.error('Error adding ICE candidate:', error);
+                });
+            }
             break;
 
         default:
@@ -111,13 +120,14 @@ socket.onmessage = (event) => {
 };
 
 // Старт видеозвонка
-const handleStartCall = async () => {
+const handleStartCall = async (): Promise<void> => {
     await startMedia();
     startCall();
     calling.value = true;
 };
 
-const endCall = () => {
+// Завершение звонка и возврат на домашнюю страницу
+const endCall = (): void => {
     router.push('/patient/home').then(() => {
         location.reload();
     });
