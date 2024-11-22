@@ -24,7 +24,7 @@ import SettingsPage from './pages/SettingsPage/SettingsPage.vue';
 import QuizPage from './pages/CameraPage/Quiz/QuizPage.vue';
 import ScanReportPage from './pages/ScanReportPage/ScanReportPage.vue';
 import AllDoctorsPage from './pages/PatientFlow/AllDoctorsPage/AllDoctorsPage.vue';
-import call from './pages/videoCall/call.vue';
+// import call from './pages/videoCall/call.vue';
 
 const routes = [
     {
