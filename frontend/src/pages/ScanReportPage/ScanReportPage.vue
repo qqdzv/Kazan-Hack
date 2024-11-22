@@ -96,12 +96,11 @@ const fetchScanReport = async () => {
 };
 
 const setNotification = async () => {
-    try{
+    try {
         const response = await api.getData<{ detail: string }>('/user/set_notification');
         if (response) {
             notification.value = response?.detail;
         }
-
     } catch (error: any) {
         if (error.response?.data?.detail) {
             if (Array.isArray(error.response.data.detail) && error.response.data.detail.length > 0) {
@@ -114,11 +113,9 @@ const setNotification = async () => {
         } else {
             notification.value = 'Произошла ошибка, попробуйте еще раз позже';
         }
-    }
-    finally {
+    } finally {
         openModal.value = true;
     }
-
 };
 function closeModal() {
     openModal.value = false;
@@ -162,7 +159,7 @@ onMounted(() => {
         }
         .resultTexts {
             h3 {
-                color: var(--Main, #418af9);
+                color: var(--Main, #16c4a4);
                 font-family: var(--font-main);
                 font-size: 48px;
                 font-style: normal;
@@ -302,7 +299,7 @@ onMounted(() => {
         gap: 8px;
         align-self: stretch;
         border-radius: 12px;
-        background: #418af9;
+        background: #16c4a4;
         color: var(--Main, #fafafa);
         text-align: center;
         font-family: var(--font-main);

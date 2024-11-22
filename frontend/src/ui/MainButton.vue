@@ -51,7 +51,7 @@ const buttonClass = computed(() => {
     border-radius: 12px;
     border: 1px solid #efefef;
 
-    color: var(--main-color, #418af9);
+    color: var(--main-color, #16c4a4);
     font-family: var(--font-main);
     font-size: 16px;
     font-style: normal;
@@ -76,7 +76,7 @@ const buttonClass = computed(() => {
     border-radius: 12px;
     border: 1px solid #efefef;
 
-    background-color: var(--main-color, #418af9);
+    background-color: var(--main-color, #16c4a4);
     color: #fff;
     font-family: var(--font-main);
     font-size: 16px;
@@ -101,7 +101,7 @@ const buttonClass = computed(() => {
     border-radius: 12px;
     border: 1px solid #efefef;
 
-    color: var(--main-color, #418af9);
+    color: var(--main-color, #16c4a4);
     background-color: #ede8fd;
     font-family: var(--font-main);
     font-size: 16px;

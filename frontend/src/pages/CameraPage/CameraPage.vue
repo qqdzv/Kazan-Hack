@@ -11,7 +11,7 @@
             <TestStep7 v-if="step === 7 || step === 8" v-model:task7="formData.mixing" @next-step="handleNextStep" @prev-step="handlePrevStep" />
         </div>
         <div class="testPage" v-else>
-            <TestStep2 v-if="step === 1" v-model:task2="formData.body_part" @next-step="handleNextStep" @prev-step="handlePrevStep"/>
+            <TestStep2 v-if="step === 1" v-model:task2="formData.body_part" @next-step="handleNextStep" @prev-step="handlePrevStep" />
             <TestDocStep2 v-if="step === 2" v-model:gender="formData.gender" @next-step="handleNextStep" @prev-step="handlePrevStep" />
             <TestDocStep3 v-if="step === 3 || step === 4" v-model:age="formData.age" @next-step="handleNextStep" @prev-step="handlePrevStep" />
         </div>
@@ -126,11 +126,10 @@ const handleTestSubmit = () => {
 
 function handlePrevStep() {
     console.log(step.value);
-    
+
     if (step.value > 1) {
         step.value--;
-    }
-    else{
+    } else {
         router.push('/select');
     }
 }
@@ -184,7 +183,7 @@ function handlePrevStep() {
             }
 
             .file-label {
-                color: var(--Main, #418af9);
+                color: var(--Main, #16c4a4);
                 text-align: center;
                 font-family: var(--font-main);
                 font-size: 16px;
@@ -221,7 +220,7 @@ function handlePrevStep() {
             align-self: stretch;
             border-radius: 12px;
             background: #fff;
-            color: var(--Main, #418af9);
+            color: var(--Main, #16c4a4);
             text-align: center;
             font-family: var(--font-main);
             font-size: 16px;

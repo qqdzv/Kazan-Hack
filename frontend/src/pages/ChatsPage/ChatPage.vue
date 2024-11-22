@@ -22,13 +22,11 @@
 
         <div class="inputBar">
             <CustomIcon id="file" :width="32" :height="32" class="fileIcon" @click="triggerFileInput"></CustomIcon>
-            <img v-if="loaded" :src="completePic" :width="25" />
+            <div class="borderPic"><img v-if="loaded" :src="completePic" :width="25" /></div>
             <textarea type="text" placeholder="Сообщение" @keyup.enter="sendMessage" @input="autoResize" v-model="newMessage"></textarea>
             <CustomIcon id="send" :width="32" :height="32" class="sendIcon" @click="sendMessage" />
         </div>
 
-        <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="onFileChange" />
-        <div v-if="isLoadingImage" class="loader"></div>
         <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="onFileChange" />
     </div>
 </template>
@@ -63,7 +61,6 @@ const speciality = ref('');
 const lastName = ref('');
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageUrl = ref<string | null>(null);
-const isLoadingImage = ref(false);
 const loaded = ref(false);
 // Ссылки на сторы пользователя и роли
 const roleStore = useRoleStore();
@@ -85,7 +82,7 @@ const fetchUserById = async (user_id: number) => {
 };
 
 const sendMessage = async () => {
-    if (!newMessage.value.trim() && !imageUrl.value) return; // сообщение или изображение обязательно
+    if (!newMessage.value.trim() && !imageUrl.value) return;
 
     const userMessage: ChatMessage = {
         sender_type: 'user',
@@ -102,8 +99,8 @@ const sendMessage = async () => {
             image_base64: imageUrl.value || '',
         });
 
-        newMessage.value = ''; // очищаем поле ввода после отправки
-        imageUrl.value = null; // очищаем изображение
+        newMessage.value = '';
+        imageUrl.value = '';
         loaded.value = false;
     } catch (error) {
         console.error('Ошибка при отправке сообщения:', error);
@@ -144,6 +141,10 @@ const onFileChange = (event: Event) => {
         console.log(imageUrl);
         loaded.value = true;
     }
+
+    if (fileInput.value) {
+        fileInput.value.value = '';
+    }
 };
 
 onMounted(async () => {
@@ -169,6 +170,11 @@ const autoResize = (event: Event) => {
 </script>
 
 <style lang="scss" scoped>
+.borderPic {
+    margin-bottom: 3px;
+    padding-right: 6px;
+    padding-left: 3px;
+}
 .aiChatPage {
     display: flex;
     flex-direction: column;

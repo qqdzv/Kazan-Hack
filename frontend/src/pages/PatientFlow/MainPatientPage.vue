@@ -9,7 +9,7 @@
                 <MainButton text="Сканировать" type="primary" className="btn_1" icon="scan" @click="router.push('/camera')" />
                 <img src="/img/homepage/pic1.png" alt="banner_1" />
             </div>
-            <div class="banner_2" v-if="user?.role === 'user'">
+            <!-- <div class="banner_2" v-if="user?.role === 'user'">
                 <div class="texts">
                     <h3>{{ testBannerText }}</h3>
                     <p>
@@ -19,7 +19,7 @@
                 </div>
                 <MainButton :text="testBtn" type="primary" className="btn_2" @click="router.push('/test')" />
                 <img src="/img/homepage/pic2.png" alt="banner_1" />
-            </div>
+            </div> -->
             <div class="folders_banners">
                 <div class="banner_3" v-if="folders" v-for="folder in folders" :key="folder.id" @click="router.push({ path: `/patient/folder/${folder.id}` })">
                     <div class="texts">
@@ -32,6 +32,7 @@
                     <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
                 </div>
             </div>
+            <!-- <MainButton text="Сканировать" type="primary" className="btn_1" icon="scan" @click="router.push('/videoCall')" /> -->
         </section>
     </main>
 </template>
@@ -50,7 +51,7 @@ defineOptions({
 });
 const user = ref(useUserStore().user);
 const hasTest = ref(user.value?.has_test);
-let testBannerText = computed(() => !hasTest.value ? 'Пройдите небольшой тест' : 'Вы уже прошли тест!');
+let testBannerText = computed(() => (!hasTest.value ? 'Пройдите небольшой тест' : 'Вы уже прошли тест!'));
 let testBtn = ref<string>(hasTest ? 'Пройти заново' : 'Пройти');
 const folders = useScansStore().folders;
 const router = useRouter();
@@ -119,7 +120,7 @@ const router = useRouter();
                 gap: 8px;
                 flex-shrink: 0;
                 border-radius: 12px;
-                background: var(--Main, #418af9);
+                background: var(--Main, #16c4a4);
             }
         }
         .banner_2 {
@@ -216,7 +217,7 @@ const router = useRouter();
                     height: 31px;
                     flex-shrink: 0;
                     border-radius: 100px;
-                    background: var(--color-main, #418af9);
+                    background: var(--color-main, #16c4a4);
                     color: #fff;
                     font-family: var(--font-main);
                     font-size: 12px;

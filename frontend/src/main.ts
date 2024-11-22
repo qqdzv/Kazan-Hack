@@ -24,6 +24,7 @@ import SettingsPage from './pages/SettingsPage/SettingsPage.vue';
 import QuizPage from './pages/CameraPage/Quiz/QuizPage.vue';
 import ScanReportPage from './pages/ScanReportPage/ScanReportPage.vue';
 import AllDoctorsPage from './pages/PatientFlow/AllDoctorsPage/AllDoctorsPage.vue';
+import call from './pages/videoCall/call.vue';
 
 const routes = [
     {
@@ -69,11 +70,12 @@ const routes = [
         children: [{ path: '', component: FolderPage }],
     },
     { path: '/patient/history', component: MainLayout, children: [{ path: '', component: HistoryPage }] },
-    { path: '/ai_chat', component: MainLayout, children: [{ path: '', component: AiChatPage }] }, 
+    { path: '/ai_chat', component: MainLayout, children: [{ path: '', component: AiChatPage }] },
     { path: '/settings', component: MainLayout, children: [{ path: '', component: SettingsPage }] },
     { path: '/quiz', component: QuizPage },
     { path: '/scanReport', component: ScanReportPage },
     { path: '/allDoctors', component: AllDoctorsPage },
+    // { path: '/videoCall', component: call },
 ];
 
 const router = createRouter({

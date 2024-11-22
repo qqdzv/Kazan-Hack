@@ -90,7 +90,7 @@ function handlePrevStep() {
     position: absolute;
     top: 13.51vh;
     left: 20px;
-    color: var(--color-main, #418af9);
+    color: var(--color-main, #16c4a4);
     font-family: var(--font-main);
     font-size: 16px;
     font-style: normal;

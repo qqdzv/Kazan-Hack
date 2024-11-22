@@ -8,7 +8,7 @@
         <RegStep5 v-if="step === 5" v-model:age="formData.age" @next-step="handleNextStep" @prev-step="handlePrevStep" />
         <RegStep6 v-if="step === 6" v-model:skinType="formData.skin_type" @prev-step="handlePrevStep" @submit="handleRegister" />
     </div>
-    <p style="color: red; font-family:var(--font-main)">{{ errorTxt }}</p>
+    <p style="color: red; font-family: var(--font-main)">{{ errorTxt }}</p>
 </template>
 
 <script setup lang="ts">
@@ -89,7 +89,7 @@ function handlePrevStep() {
     position: absolute;
     top: 29.51vh;
     left: 20px;
-    color: var(--color-main, #418af9);
+    color: var(--color-main, #16c4a4);
     font-family: var(--font-main);
     font-size: 16px;
     font-style: normal;

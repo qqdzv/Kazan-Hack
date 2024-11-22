@@ -15,6 +15,6 @@ onMounted(() => {
     setTimeout(() => {
         isLoading.value = false;
         router.push('/select');
-    }, 5100); // Условное время загрузки
+    }, 3100); // Условное время загрузки 5100
 });
 </script>

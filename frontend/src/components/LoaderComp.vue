@@ -38,7 +38,7 @@ onMounted(() => {
         width: 200px; /* Начальный размер круга */
         height: 200px; /* Начальный размер круга */
         border-radius: 50%; /* Делает элемент кругом */
-        background: #e3f2fd;
+        background: #16c4a4;
         transition: all 0.5s ease; /* Плавное изменение свойств */
         transform: translateX(-25%);
         touch-action: manipulation;
