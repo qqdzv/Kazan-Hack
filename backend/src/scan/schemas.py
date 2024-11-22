@@ -3,6 +3,10 @@ from typing import Optional
 from datetime import datetime
 from enum import Enum
 
+class ScanType(str, Enum):
+    eye = "eye"
+    skin = "skin"
+    
 class BodyPart(str, Enum):
     anterior_torso = "anterior torso"  # Передняя часть торса
     lower_extremity = "lower extremity"  # Нижняя конечность
@@ -43,6 +47,7 @@ class ScanInfo(BaseModel):
     id : int
     folder_id: int
     response : str
+    scan_type : ScanType
     percent : Optional[float]
     type : Optional[str]
     result : Optional[str]

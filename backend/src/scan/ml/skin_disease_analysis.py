@@ -6,6 +6,11 @@ import numpy as np
 
 def get_answer(image_base64 : str):
     
+    if image_base64.startswith("data:image/jpeg;base64,"):
+        image_base64 = image_base64.split(",")[1]
+    if image_base64.startswith("data:image/png;base64,"):
+        image_base64 = image_base64.split(",")[1]
+        
     processor = AutoImageProcessor.from_pretrained("Muzmmillcoste/finetuned-dermnet")
     dermnet_model = AutoModelForImageClassification.from_pretrained(
         "Muzmmillcoste/finetuned-dermnet"

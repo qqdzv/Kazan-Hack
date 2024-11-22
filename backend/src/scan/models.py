@@ -33,3 +33,14 @@ class ScanFolder(Base):
     mixing = Column(String)
     folder_name = Column(String)
     created_at = Column(TIMESTAMP, default = lambda : datetime.now(timezone.utc).replace(tzinfo=None))
+
+class EyeScan(Base):
+    __tablename__ = "eye_scan"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey("user.id"))
+    folder_id = Column(Integer, ForeignKey("scan_folder.id"))
+    
+    image_base64 = Column(String)
+    response = Column(String, nullable=False, default="")
+    created_at = Column(TIMESTAMP, default = lambda : datetime.now(timezone.utc).replace(tzinfo=None))
