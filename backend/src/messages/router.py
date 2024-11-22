@@ -19,7 +19,7 @@ from src.messages.models import Message
 from typing import Dict, List
 from datetime import datetime, timezone
 from pydantic import BaseModel
-
+from src.myredis import redis_fastapi
 
 def format(all_messages : list[MessageRead], receivers_type : str = 'doctor'):
     answer = {}
@@ -48,6 +48,12 @@ class ResponseModel(BaseModel):
 class ConferenceRegister(BaseModel):
     receiver_id: int 
     conference_time: datetime
+
+class ConferenceRead(BaseModel):
+    conference_time: datetime
+    
+    class Config:
+        from_attributes = True
     
 
 async def get_role(
@@ -302,8 +308,25 @@ async def get_chat_by_id(id_ : str, info = Depends(get_role), session: AsyncSess
             status_code=status.HTTP_200_OK,
             content=[]
         )
+
+@router.get("get_all_coference/{id_}")
+async def get_all_conference(id_ : str, session: AsyncSession = Depends(get_async_session)):
     
-    
+    result = await session.execute(
+        select(Message).where(Message.conference_time != None
+            )
+        )
+    all_conference = [
+        {
+          "conference_time" : message.conference_time.isoformat() if isinstance(message.conference_time, datetime) else message.conference_time
+        }
+        for message in result.scalars().all()
+    ]
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=all_conference
+    )
+        
 async def conference_updater():
     
     async for session in get_async_session():
@@ -327,7 +350,21 @@ async def conference_updater():
         ]
 
         for message in all_messages:
-            session.add(message)
-            await session.commit()
+            result = await session.execute(
+                select(Message).where(
+                    and_
+                    (
+                        Message.sender_id == message.sender_id,
+                        Message.conference_time == message.conference_time
+                    )
+                )
+            
+            )
+            is_exists = len(result.scalars().all())!=0
+            if is_exists:
+                continue
+            else:
+                session.add(message)
+                await session.commit()
 
 
