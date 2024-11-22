@@ -6,13 +6,6 @@
 	handle /ml/* {
 	   reverse_proxy ml_app:6969
 	}
-    handle /ws/* {
-        reverse_proxy 195.133.46.8:5000 {
-            header_up Host {host}
-            header_up Connection {>Connection}
-            header_up Upgrade {>Upgrade}
-        }
-    }
 	handle {
 		root * /app/dist
 		try_files {path} /index.html
