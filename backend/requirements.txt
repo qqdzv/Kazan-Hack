@@ -138,3 +138,4 @@ tzdata==2024.2
 langchain_community
 segmentation-models-pytorch==0.3.4
 matplotlib==3.9.2
+apscheduler==3.10.4
