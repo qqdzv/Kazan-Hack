@@ -21,6 +21,8 @@ class MessageRead(BaseModel):
     receiver_type: str
     receiver_name: str
     content: str 
+    conference_time : datetime
+    have_link : bool
     abcd_score: Optional[str]
     doctor_result: Optional[str]
     image_base64: Optional[str]

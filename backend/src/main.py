@@ -17,7 +17,15 @@ import time
 from src.logger import logger
 from src.z import start_websocket_server
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+
+from src.messages.router import conference_updater
 templates = Jinja2Templates(directory="src/templates")
+
+
+scheduler = AsyncIOScheduler()
+scheduler.add_job(conference_updater, IntervalTrigger(minutes=1))
 
 async def start_tgbot():
     await dp.start_polling()
@@ -26,12 +34,13 @@ async def start_tgbot():
 async def lifespan(app: FastAPI):
     time.sleep(2)
     websocket_task = asyncio.create_task(start_websocket_server())
-    bot_task = asyncio.create_task(start_tgbot())
+    scheduler.start()
+    # bot_task = asyncio.create_task(start_tgbot())
     RedisCacheBackend(redis_fastapi)
     yield
     websocket_task.cancel()
-    bot_task.cancel()
-    await bot_task
+    # bot_task.cancel()
+    # await bot_task
 
 app = FastAPI(
     title="Test",

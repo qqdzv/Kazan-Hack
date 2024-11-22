@@ -1,5 +1,5 @@
 from datetime import datetime,timezone
-from sqlalchemy import Column, Integer, String, TIMESTAMP
+from sqlalchemy import Column, Integer, String, TIMESTAMP, Boolean
 from src.database import Base
 
 class Message(Base):
@@ -11,6 +11,8 @@ class Message(Base):
     receiver_id = Column(Integer, nullable=False, index=True)  # Индекс на receiver_id
     receiver_type = Column(String, nullable=False, index=True)  # Индекс на receiver_type
     content = Column(String, nullable=False)
+    conference_time = Column(TIMESTAMP, nullable=True)
+    have_link = Column(Boolean, default = False, nullable=True)
     abcd_score = Column(String,default=None)
     doctor_result = Column(String, default=None)
     image_base64 = Column(String, default=None)
