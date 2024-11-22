@@ -28,7 +28,7 @@ async def start_websocket_server():
 
 
     # Запуск WebSocket сервера на порту 5000
-    server = await websockets.serve(handle_connection, "0.0.0.0", 5000)
-    logger.info("WebSocket server started at ws://0.0.0.0:5000")
+    server = await websockets.serve(handle_connection, "0.0.0.0/ws", 5000)
+    logger.info("WebSocket server started at ws://0.0.0.0/ws:5000")
     await server.wait_closed()
-    logger.info("WebSocket server closed at ws://0.0.0.0:5000")
+    logger.info("WebSocket server closed at ws://0.0.0.0/ws:5000")
