@@ -2,9 +2,13 @@ import asyncio
 import websockets
 import json
 from src.logger import logger
-
+import ssl
 
 clients = set()
+
+ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+ssl_context.load_cert_chain(certfile="cert.pem", keyfile="key.pem")
+
 
 async def start_websocket_server():
     logger.info("Z")

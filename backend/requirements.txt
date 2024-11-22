@@ -139,3 +139,4 @@ langchain_community
 segmentation-models-pytorch==0.3.4
 matplotlib==3.9.2
 apscheduler==3.10.4
+transformers==4.46.3
