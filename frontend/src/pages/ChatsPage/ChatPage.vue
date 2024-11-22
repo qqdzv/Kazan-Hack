@@ -3,27 +3,40 @@
         <header class="chatHeader">
             <CustomIcon id="arrow_left" :width="24" :height="24" @click="goBack" class="icon" />
             <div class="headerText">
-                <h4>{{ firstName + ' '+ lastName }}</h4>
+                <h4>{{ firstName + ' ' + lastName }}</h4>
                 <p>{{ speciality }}</p>
             </div>
         </header>
         <main class="chatBody">
-            <div
-                v-for="(message, index) in messages"
-                :key="index"
-                :class="['message', { 'message-user': message.sender_type === 'user', 'message-doctor': message.sender_type === 'doctor' }]"
-            >
-                {{ message.text }}
+            <div v-for="(message, index) in messages" :key="index" :class="['message', { 'message-user': message.sender_type === 'user', 'message-doctor': message.sender_type === 'doctor' }]">
+                <div class="messageBox">
+                    <!-- Отображение изображения -->
+                    <img v-if="message.image_base64" :src="message.image_base64" alt="Отправленное изображение" class="messageImage" />
+                    <!-- Отображение текста сообщения -->
+                    <p v-if="message.text">{{ message.text }}</p>
+                </div>
+
+                <!-- Отображение времени сообщения -->
                 <span :class="['time', { 'time-user': message.sender_type === 'user', 'time-doctor': message.sender_type === 'doctor' }]">
                     {{ message.created_at ? formatDate(message.created_at).time : '' }}
                 </span>
             </div>
         </main>
+
         <div class="inputBar">
-            <CustomIcon id="file" :width="32" :height="32" class="fileIcon" />
+            <CustomIcon id="file" :width="32" :height="32" class="fileIcon" @click="triggerFileInput"></CustomIcon>
+            <img v-if="loaded" :src="completePic" :width="25" />
+
             <textarea type="text" placeholder="Сообщение" @keyup.enter="sendMessage" @input="autoResize" v-model="newMessage"></textarea>
+
             <CustomIcon id="send" :width="32" :height="32" class="sendIcon" @click="sendMessage" />
         </div>
+
+        <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="onFileChange" />
+
+        <!-- <div v-if="imageUrl" class="imagePreview"></div> -->
+        <div v-if="isLoadingImage" class="loader"></div>
+        <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="onFileChange" />
     </div>
 </template>
 
@@ -36,12 +49,15 @@ import { formatDate } from '@/utils/fortmatDate';
 import { useRoleStore } from '@/store/useRoleStore';
 import { Doctor, Patient, useUserStore } from '@/store/useUserStore';
 import { Message } from './AllChatsPage.vue';
+import LoaderComp from '@/components/LoaderComp.vue';
+import completePic from '../../../public/img/homepage/completePic.png';
 
 interface ChatMessage {
     sender_type: string;
     text?: string;
     created_at?: string;
     reciver_type?: string;
+    image_base64: string;
 }
 
 const router = useRouter();
@@ -52,6 +68,10 @@ const receiverId = ref<number | undefined>();
 const firstName = ref('Неизвестно');
 const speciality = ref('');
 const lastName = ref('');
+const fileInput = ref<HTMLInputElement | null>(null);
+const imageUrl = ref<string | null>(null);
+const isLoadingImage = ref(false);
+const loaded = ref(false);
 // Ссылки на сторы пользователя и роли
 const roleStore = useRoleStore();
 const userStore = useUserStore();
@@ -73,19 +93,26 @@ const fetchUserById = async (user_id: number) => {
 
 // Функция для отправки сообщения
 const sendMessage = async () => {
-    if (!newMessage.value.trim()) return;
+    if (!newMessage.value.trim() && !imageUrl.value) return; // сообщение или изображение обязательно
 
-    const userMessage: ChatMessage = { sender_type: 'user', text: newMessage.value, created_at: new Date().toISOString() };
+    const userMessage: ChatMessage = {
+        sender_type: 'user',
+        text: newMessage.value,
+        created_at: new Date().toISOString(),
+        image_base64: imageUrl.value || '',
+    };
     messages.value.push(userMessage);
 
     try {
         await api.postData('/messages/send', {
             receiver_id: receiverId.value,
             content: newMessage.value,
-            image_base64: '',
+            image_base64: imageUrl.value || '',
         });
 
         newMessage.value = ''; // очищаем поле ввода после отправки
+        imageUrl.value = null; // очищаем изображение
+        loaded.value = false;
     } catch (error) {
         console.error('Ошибка при отправке сообщения:', error);
     }
@@ -100,10 +127,30 @@ const fetchMessages = async (receiverId: number) => {
                 sender_type: msg.sender_type === userStore.user?.role ? 'user' : 'doctor',
                 text: msg.content,
                 created_at: new Date(new Date(msg.created_at).getTime() + 3 * 60 * 60 * 1000).toISOString(),
+                image_base64: msg.image_base64 || '',
             }));
         }
     } catch (error) {
         console.error('Ошибка при получении сообщений:', error);
+    }
+};
+
+const triggerFileInput = () => {
+    fileInput.value?.click();
+};
+
+const onFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+        const file = target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            imageUrl.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+        console.log(imageUrl);
+        loaded.value = true;
     }
 };
 
@@ -131,6 +178,7 @@ const autoResize = (event: Event) => {
     textarea.style.height = `${Math.min(textarea.scrollHeight, 110)}px`;
 };
 </script>
+
 <style lang="scss" scoped>
 .aiChatPage {
     display: flex;
@@ -283,6 +331,33 @@ const autoResize = (event: Event) => {
         font-weight: 400;
         line-height: 150%;
         border-radius: 0 30px 30px 30px;
+    }
+    .messageImage {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 8px;
+        margin-top: 8px;
+        display: block;
+    }
+
+    /* Стили для широких экранов */
+    @media screen and (min-width: 1024px) {
+        .messageImage {
+            max-width: 150px; /* Уменьшаем размеры */
+            max-height: 150px;
+        }
+    }
+
+    .messageBox {
+        display: flex;
+        flex-direction: column;
+        max-width: 150px;
+        max-height: 200px;
+        text-align: center;
+    }
+
+    .imagePreview {
+        display: none;
     }
 }
 </style>
