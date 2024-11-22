@@ -1,17 +1,33 @@
 {$DOMAIN} {
-	encode gzip
-	handle /api/* {
-		reverse_proxy api:8000
-	}
-	handle /ml/* {
-	   reverse_proxy ml_app:6969
-	}
-	handle {
-		root * /app/dist
-		try_files {path} /index.html
-		file_server
-	}
-	handle_errors {
-		respond "{err.status_code} {err.status_text}"
-	}
+    encode gzip
+
+    # Прокси для API
+    handle /api/* {
+        reverse_proxy api:8000
+    }
+
+    # Прокси для ML
+    handle /ml/* {
+        reverse_proxy ml_app:6969
+    }
+
+    # Прокси для WebSocket соединений (WSS)
+    handle /ws/* {
+        reverse_proxy ws://skin-cancer.ru:5000
+    }
+
+    # Статические файлы
+    handle {
+        root * /app/dist
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Обработка ошибок
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
+
+    # Поддержка SSL для WSS (автоматически от Let's Encrypt)
+    tls youremail@example.com
 }
