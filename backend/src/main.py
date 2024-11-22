@@ -15,60 +15,21 @@ from src.myredis import redis_fastapi
 import asyncio
 import time
 from src.logger import logger
+from src.z import start_websocket_server
 
 templates = Jinja2Templates(directory="src/templates")
 
-# Ваши WebSocket обработчики
-clients = set()
-
-async def handle_connection(websocket, path):
-    # Подключение нового клиента
-    clients.add(websocket)
-    try:
-        async for message in websocket:
-            # Получаем сообщение от клиента
-            logger.info(f"Received message: {message}")
-
-            # Рассылаем это сообщение всем остальным клиентам
-            for client in clients:
-                if client != websocket:
-                    await client.send(message)
-    except websockets.exceptions.ConnectionClosed:
-        logger.info("Connection closed")
-    finally:
-        # Убираем клиента из списка при закрытии соединенияx
-        clients.remove(websocket)
-
-async def start_websocket_server():
-    server = await websockets.serve(handle_connection, "localhost", 5000)
-    print("WebSocket server started at ws://:5000")
-    await server.wait_closed()
-
-# Асинхронный контекст жизни FastAPI для запуска WebSocket сервера
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Запуск WebSocket сервера в фоновом режиме]
-    bot_task = asyncio.create_task(start_tgbot())
-    RedisCacheBackend(redis_fastapi)
-    websocket_task = asyncio.create_task(start_websocket_server())
-    yield  # Возвращаем управление FastAPI
-    
-    # Завершаем задачи после выхода из lifespan
-    websocket_task.cancel()
-    bot_task.cancel()
-    await websocket_task
-    await bot_task
-    
 async def start_tgbot():
     await dp.start_polling()
     
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     time.sleep(2)
+    websocket_task = asyncio.create_task(start_websocket_server())
     bot_task = asyncio.create_task(start_tgbot())
     RedisCacheBackend(redis_fastapi)
     yield
-    
+    websocket_task.cancel()
     bot_task.cancel()
     await bot_task
 
