@@ -7,7 +7,7 @@ import ssl
 clients = set()
 
 ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-ssl_context.load_cert_chain(certfile="cert.pem", keyfile="key.pem")
+ssl_context.load_cert_chain(certfile="src/cert.pem", keyfile="src/key.pem")
 
 
 async def start_websocket_server():
