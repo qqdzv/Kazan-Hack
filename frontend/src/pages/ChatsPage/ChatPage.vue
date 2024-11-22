@@ -22,7 +22,7 @@
 
         <div class="inputBar">
             <CustomIcon id="file" :width="32" :height="32" class="fileIcon" @click="triggerFileInput"></CustomIcon>
-            <div class="borderPic"><img v-if="loaded" :src="completePic" :width="25" /></div>
+            <div class="borderPic"><img v-if="loaded" src="/img/homepage/completePic.png" :width="25" /></div>
             <textarea type="text" placeholder="Сообщение" @keyup.enter="sendMessage" @input="autoResize" v-model="newMessage"></textarea>
             <CustomIcon id="send" :width="32" :height="32" class="sendIcon" @click="sendMessage" />
         </div>
@@ -41,7 +41,15 @@ import { useRoleStore } from '@/store/useRoleStore';
 import { Doctor, Patient, useUserStore } from '@/store/useUserStore';
 import { Message } from './AllChatsPage.vue';
 import LoaderComp from '@/components/LoaderComp.vue';
-import completePic from '../../../public/img/homepage/completePic.png';
+import MainButton from '@/ui/MainButton.vue';
+
+const goToVideoCall = () => {
+    console.log('Переход на /videoCall');
+    router.push('/videoCall').catch((err) => {
+        console.error('Ошибка при переходе:', err);
+    });
+    window.history.back();
+};
 
 interface ChatMessage {
     sender_type: string;

@@ -32,7 +32,7 @@
                     <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
                 </div>
             </div>
-            <!-- <MainButton text="Сканировать" type="primary" className="btn_1" icon="scan" @click="router.push('/videoCall')" /> -->
+            <MainButton text="Видео встреча" type="primary" className="btn_1" @click="router.push('/videoCall')" :width="220" />
         </section>
     </main>
 </template>
