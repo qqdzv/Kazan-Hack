@@ -19,7 +19,7 @@
                 <img src="/img/homepage/glaz.png" alt="banner_1" />
             </div>
 
-            <div class="banner_3" @click="router.push('/medCard')">
+            <div class="banner_3" @click="router.push('/test')">
                 <div class="texts">
                     <div class="head_texts">
                         <h3>Медкарта</h3>

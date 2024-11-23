@@ -9,7 +9,7 @@ from src.config import CHAT_BOT_API
 import asyncio
 
 
-pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+# pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 
 def process_image(img_path: str) -> Image:

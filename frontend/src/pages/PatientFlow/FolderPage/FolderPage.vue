@@ -9,10 +9,10 @@
                     <div class="skeleton skeleton-text-line small"></div>
                 </div>
             </div>
-            <div v-else v-for="scan in folder?.scans" :key="scan.id" class="scan" @click="router.push({ path: '/scanReport', query: { scanID: scan.id } })">
+            <div v-else v-for="scan in folder?.scans" :key="scan.id" class="scan" @click="router.push({path:'/scanReport', query:{scanID: scan.id}})">
                 <img :src="scan.image_base64" alt="scan" />
                 <div class="texts">
-                    <h4>{{ extractTextInParentheses(scan.response) || scan.response }}</h4>
+                    <h4>{{ extractTextInParentheses(scan.response) || scan.response}}</h4>
                     <div class="date"><CustomIcon id="clock" :width="24" :height="24" /> {{ formatDate(scan.created_at).date }}</div>
                 </div>
                 <CustomIcon id="blueArrow" :width="24" :height="24" class="blueArrow" />
@@ -37,16 +37,15 @@ defineOptions({
 });
 
 interface Scan {
-    id: number;
-    folder_id: number;
-    response: string;
-    percent: number;
-    type: string;
-    result: string;
-    recommendations: string;
-    image_base64: string;
-    created_at: string;
-    scan_type: string;
+    id:number;
+    folder_id:number;
+    response:string;
+    percent:number;
+    type:string;
+    result:string;
+    recommendations:string;
+    image_base64:string;
+    created_at:string;
 }
 
 const route = useRoute();
@@ -54,7 +53,7 @@ const folderID = Number(route.params.id);
 const folders = useScansStore().folders;
 const userStore = useUserStore();
 const isLoading = ref(true);
-const router = useRouter();
+const router = useRouter(); 
 const folder = computed(() => {
     return folders?.find((folder) => folder.id === folderID) || null;
 });
@@ -68,7 +67,7 @@ const fetchScansForFolder = async (folderId: number) => {
         if (folder) {
             folder.scans = response;
             console.log(folder.scans);
-
+            
             // Обновляем массив сканов в фолдере
         }
 

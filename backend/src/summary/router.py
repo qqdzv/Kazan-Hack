@@ -37,7 +37,7 @@ from src.scan.ml.eye_disease_analysis import get_eye_answer
 import os
 from src.scan.doctor_support import generate_doctor_report
 from src.scan.ml.abcd_generate import get_absd_score
-
+from src.summary.speech_analysis import process_speech_to_report
 
 router = APIRouter(
     prefix="/summary",
@@ -64,8 +64,12 @@ async def upload_audio_file(audio: UploadFile = File(...), user: User|None = Dep
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(audio.file, buffer)
     
+    info = await process_speech_to_report(file_path)
+    print(info)
+    
     return JSONResponse(
         status_code=200,
-        content={"message": f"File {audio.filename} uploaded successfully!"}
+        content={"message": f"File {audio.filename} uploaded successfully!",
+                 "info": info}
     )
 
