@@ -1,28 +1,19 @@
 <template>
     <div class="step4">
-        <h2 v-if="!show">Что вы хотите отсканировать?</h2>
+        <h2 v-if="!show">Выберите документ для сканирования</h2>
 
         <div v-if="!show" :style="{ display: 'flex', marginTop: '30px' }">
-            <MainButton text="Родинку" @click="selectAnswer('Родинку')" :class="{ active: selectedOption === 'Родинку' }" type="secondary" />
+            <MainButton text="Выбор файла" @click="triggerFileInput()" type="secondary" />
 
-            <MainButton
-                :style="{ marginLeft: '30px' }"
-                text="Кожу"
-                @click="
-                    selectAnswer('кожу');
-                    triggerFileInput();
-                "
-                :class="{ active: selectedOption === 'кожу' }"
-                type="secondary"
-            />
+            <MainButton :style="{ marginLeft: '30px' }" text="Сканировать" @click="" type="secondary" />
         </div>
+
+        <h4 v-if="loading" class="text-center" :style="{ marginTop: '50px' }">Загрузка...</h4>
 
         <TestResult v-if="show" :folder_name="folder_name" :image_base64="image_base64" />
     </div>
     <div class="bottom">
         <MainButton text="Назад" @click="router.go(-1)" type="secondary" />
-
-        <MainButton v-if="!show" text="Далее" @click="nextStep" type="primary" />
     </div>
 
     <input type="file" accept="image/*" ref="fileInput" class="hidden" :style="{ opacity: '0' }" @change="onFileChange" />
@@ -50,6 +41,7 @@ const task4Value = ref(props.task4 || '');
 const folder_name = ref('');
 const image_base64 = ref('');
 const show = ref(false);
+const loading = ref(false);
 
 interface ScanResponse {
     response: string;
@@ -63,16 +55,6 @@ watch(task4Value, (newAnswer) => {
 const selectAnswer = (task: string) => {
     selectedOption.value = task;
     task4Value.value = task;
-};
-
-const nextStep = () => {
-    if (task4Value.value === 'кожу') {
-        sendSkinPhoto();
-    } else {
-        if (task4Value.value) {
-            emit('next-step');
-        }
-    }
 };
 
 const sendSkinPhoto = async () => {
@@ -95,11 +77,14 @@ const sendSkinPhoto = async () => {
 };
 
 const triggerFileInput = () => {
-    // console.log('triggerFileInput called');
+    loading.value = true;
     fileInput.value?.click();
+    loading.value = false;
 };
 
 const onFileChange = (event: Event) => {
+    loading.value = true;
+
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
         const file = target.files[0];
@@ -114,10 +99,14 @@ const onFileChange = (event: Event) => {
     if (fileInput.value) {
         fileInput.value.value = '';
     }
+    loading.value = false;
 };
 </script>
 
 <style lang="scss" scoped>
+.text-center {
+    font-family: var(--font-main);
+}
 .active {
     background-color: #16c4a4; /* Зеленый цвет для выбранной кнопки */
     color: white; /* Белый текст */
@@ -147,9 +136,7 @@ const onFileChange = (event: Event) => {
     }
 }
 .bottom {
-    position: fixed;
     width: 89.7435897vw;
-    bottom: 30px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
