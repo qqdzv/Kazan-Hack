@@ -111,7 +111,7 @@ async def upload_and_process_file(
         return JSONResponse(status_code=500, content={"detail":f"Error processing file: {e}"})
 
 @router.get("/get_my_documents")
-async def upload_and_process_file(
+async def get_my_documents(
     user: User | None = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ) -> JSONResponse:

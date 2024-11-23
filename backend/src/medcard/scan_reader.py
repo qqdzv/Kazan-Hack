@@ -6,6 +6,7 @@ from PIL import Image
 import os
 from pdf2image import convert_from_path
 from src.config import CHAT_BOT_API
+import asyncio
 
 def process_image(img_path: str) -> Image:
     # Get the file extension
@@ -29,7 +30,7 @@ async def process_image_to_json(img: str) -> dict:
     img = process_image(img)
 
     # Extract text from the image using Tesseract
-    text = pytesseract.image_to_string(img, lang="rus")
+    text = await asyncio.to_thread(pytesseract.image_to_string, img, lang="rus")
     headers = {
         "Authorization": f"Bearer {CHAT_BOT_API}",
         "Content-Type": "application/json"
