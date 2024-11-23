@@ -38,12 +38,10 @@ const nextStep = () => {
             } else {
                 router.push('/doctor/chats');
             }
-        }
-        else {
+        } else {
             router.push('/login/' + roleStore.role);
         }
     }
-    
 };
 </script>
 

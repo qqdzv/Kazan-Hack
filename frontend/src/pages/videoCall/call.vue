@@ -155,7 +155,7 @@ const endCall = (): void => {
 
 <template>
     <div class="mainLayout">
-        <h4>Хирург Хирургович</h4>
+        <h4>Константин Константинович</h4>
 
         <div class="video-container" :style="{ marginTop: '30px' }">
             <video ref="localVideo" autoplay muted></video>

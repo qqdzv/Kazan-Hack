@@ -61,6 +61,7 @@ const onFileChange = (event: Event) => {
 
 <template>
     <div class="mainLayout">
+        <h2>Выберете фото глаза который вы хотите отсканировать</h2>
         <div class="content-wrapper">
             <MainButton text="Загрузить" @click="triggerFileInput()" type="primary" />
             <MainButton text="Отправить" @click="sendEyePhoto()" type="secondary" />
@@ -90,6 +91,14 @@ const onFileChange = (event: Event) => {
 </template>
 
 <style lang="scss" scoped>
+h2 {
+    color: var(--Text, #1d1d1d);
+    font-family: var(--font-main);
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
 .mainLayout {
     width: 100%;
     display: flex;
@@ -105,6 +114,7 @@ const onFileChange = (event: Event) => {
     align-items: center; /* Центрируем элементы по горизонтали */
     justify-content: center; /* Центрируем по вертикали (если понадобится) */
     gap: 10px; /* Расстояние между кругом и текстом */
+    margin-top: 30px;
 }
 
 .circlePhoto {

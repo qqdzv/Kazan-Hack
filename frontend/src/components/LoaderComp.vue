@@ -1,6 +1,20 @@
 <template>
     <div class="loader">
-        <CustomIcon id="bigLogo" :width="293" :height="135" />
+        <!-- <CustomIcon id="bigLogo" :width="293" :height="135" /> -->
+        <div
+            :style="{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: '10px',
+                width: '207px',
+                height: '33px',
+            }"
+        >
+            <img src="/img/homepage/faceIcon.png" alt="" style="width: 30px; height: 30px" />
+            <h2 :style="{ marginLeft: '5px', marginTop: '0' }">TeleDoc</h2>
+        </div>
         <div class="circle" :class="{ animate: isAnimating }" />
     </div>
 </template>
@@ -22,6 +36,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+h2 {
+    color: var(--Text, #16c4a4);
+    font-family: var(--font-main);
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
 .loader {
     width: 100%;
     height: 100dvh;

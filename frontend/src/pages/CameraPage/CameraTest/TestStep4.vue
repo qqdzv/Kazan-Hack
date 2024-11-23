@@ -17,6 +17,8 @@
             />
         </div>
 
+        <h4 v-if="loading" class="text-center" :style="{ marginTop: '50px' }">Загрузка...</h4>
+
         <TestResult v-if="show" :folder_name="folder_name" :image_base64="image_base64" />
     </div>
     <div class="bottom">
@@ -39,6 +41,7 @@ const selectedOption = ref<string | null>(''); // Храним выбранны�
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageUrl = ref<string | null>(null);
 const router = useRouter();
+const loading = ref(false);
 
 defineOptions({
     name: 'TestStep4',
@@ -76,6 +79,8 @@ const nextStep = () => {
 };
 
 const sendSkinPhoto = async () => {
+    loading.value = true;
+
     try {
         const rawResponse = await api.postData('/scan/send_skin', {
             folder_name: 'Мои сканы',
@@ -92,11 +97,14 @@ const sendSkinPhoto = async () => {
     } catch (error) {
         console.error('Ошибка при отправке фото:', error);
     }
+    loading.value = false;
 };
 
 const triggerFileInput = () => {
     // console.log('triggerFileInput called');
+    loading.value = true;
     fileInput.value?.click();
+    loading.value = false;
 };
 
 const onFileChange = (event: Event) => {
@@ -118,6 +126,14 @@ const onFileChange = (event: Event) => {
 </script>
 
 <style lang="scss" scoped>
+.text-center {
+    text-align: center; /* Выравниваем текст по центру */
+    color: var(--Text, #1d1d1d);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.2;
+    font-family: var(--font-main);
+}
 .active {
     background-color: #16c4a4; /* Зеленый цвет для выбранной кнопки */
     color: white; /* Белый текст */
