@@ -142,7 +142,10 @@ def predict(model, image, csv_data):
     # Возвращаем класс и вероятность в процентах
     return predicted_class, max_probability * 100
 
-def get_result(gender : str, age : int, body_part : str, image_base64 : str = '') -> str:
+def get_result(gender : str = "male", age : int = 18, body_part : str = "head/neck", image_base64 : str = '') -> str:
+    body_part="head/neck"
+    gender="male"
+    age=19
     image_base64 = image_base64.split(',')[1]
     model_path = os.path.join(os.path.dirname(__file__), 'model.pth')
     model = load_model(model_path)
