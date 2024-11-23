@@ -12,7 +12,7 @@ export interface Scan {
     recommendations: string;
     image_base64: string;
     created_at: string;
-    scan_type?: string;
+    scan_type: string;
 }
 // Обновленный интерфейс Folder
 export interface Folder {
