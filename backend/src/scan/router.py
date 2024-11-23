@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import get_async_session
 from src.auth.schemas import UserRead
@@ -97,7 +97,25 @@ async def send_skin(new_scan : ScanSkinNew, user: User|None = Depends(get_curren
     if isinstance(user, JSONResponse):
         return user
     
+    max_id_eye = await session.execute(select(EyeScan.id).order_by(EyeScan.id.desc()).limit(1))
+    max_id_skin = await session.execute(select(SkinScan.id).order_by(SkinScan.id.desc()).limit(1))
+    max_id_scan = await session.execute(select(Scan.id).order_by(Scan.id.desc()).limit(1))
+
+    # Получение максимальных значений для каждой таблицы
+    max_id_eye = max_id_eye.scalar_one_or_none()
+    max_id_skin = max_id_skin.scalar_one_or_none()
+    max_id_scan = max_id_scan.scalar_one_or_none()
+
+    # Извлечение максимального id из трех таблиц
+    max_id = max(
+        max_id_eye if max_id_eye is not None else 0,
+        max_id_skin if max_id_skin is not None else 0,
+        max_id_scan if max_id_scan is not None else 0
+    )
+    
+    
     new_skin_scan = SkinScan(
+        id=max_id+1,
         sender_id=user.id,
         image_base64=new_scan.image_base64
     )
@@ -147,7 +165,24 @@ async def send_eye(new_scan : ScanEyeNew, user: User|None = Depends(get_current_
     if isinstance(user, JSONResponse):
         return user
     
+    max_id_eye = await session.execute(select(EyeScan.id).order_by(EyeScan.id.desc()).limit(1))
+    max_id_skin = await session.execute(select(SkinScan.id).order_by(SkinScan.id.desc()).limit(1))
+    max_id_scan = await session.execute(select(Scan.id).order_by(Scan.id.desc()).limit(1))
+
+    # Получение максимальных значений для каждой таблицы
+    max_id_eye = max_id_eye.scalar_one_or_none()
+    max_id_skin = max_id_skin.scalar_one_or_none()
+    max_id_scan = max_id_scan.scalar_one_or_none()
+
+    # Извлечение максимального id из трех таблиц
+    max_id = max(
+        max_id_eye if max_id_eye is not None else 0,
+        max_id_skin if max_id_skin is not None else 0,
+        max_id_scan if max_id_scan is not None else 0
+    )
+
     new_eye_scan = EyeScan(
+        id=max_id+1,
         sender_id=user.id,
         image_base64=new_scan.image_base64
     )
@@ -198,8 +233,24 @@ async def send_message(new_scan: ScanAddNew, user: User|None = Depends(get_curre
     if isinstance(user, JSONResponse):
         return user
     
+    max_id_eye = await session.execute(select(EyeScan.id).order_by(EyeScan.id.desc()).limit(1))
+    max_id_skin = await session.execute(select(SkinScan.id).order_by(SkinScan.id.desc()).limit(1))
+    max_id_scan = await session.execute(select(Scan.id).order_by(Scan.id.desc()).limit(1))
 
+    # Получение максимальных значений для каждой таблицы
+    max_id_eye = max_id_eye.scalar_one_or_none()
+    max_id_skin = max_id_skin.scalar_one_or_none()
+    max_id_scan = max_id_scan.scalar_one_or_none()
+
+    # Извлечение максимального id из трех таблиц
+    max_id = max(
+        max_id_eye if max_id_eye is not None else 0,
+        max_id_skin if max_id_skin is not None else 0,
+        max_id_scan if max_id_scan is not None else 0
+    )
+    
     new_message = Scan(
+        id=max_id+1,
         sender_id=user.id,
         image_base64=new_scan.image_base64,
     )
@@ -542,35 +593,61 @@ async def get_scan_by_id(scan_id : int, info : str = Depends(get_role), session:
         return info
     
     if info['role'] == 'user':
-        result = await session.execute(select(Scan).where(
+        scan_result = await session.execute(select(Scan).where(
             and_(
                 Scan.id == scan_id,
                 Scan.sender_id == info['uid']
                 )
             )
         )
-        result = await session.execute(select(Scan).where(Scan.id == scan_id))
+        eye_scan_result = await session.execute(
+            select(EyeScan).where(
+                and_(
+                    EyeScan.id == scan_id,
+                    EyeScan.sender_id == info['uid']
+                )
+            )
+        )
+        skin_scan_result = await session.execute(
+            select(SkinScan).where(
+                and_(
+                    SkinScan.id == scan_id,
+                    SkinScan.sender_id == info['uid']
+                )
+            )
+        )
+        
+        eye_scan = eye_scan_result.scalar_one_or_none()
+        skin_scan = skin_scan_result.scalar_one_or_none()
+        scan = scan_result.scalar_one_or_none()
+
+        if eye_scan:
+            result=eye_scan
+        elif skin_scan:
+            result=skin_scan
+        elif scan:
+            result=scan
+        else:
+            result=None
     else:
-        result = await session.execute(select(DoctorScan).where(DoctorScan.id == scan_id))
-                                       
-    scan = result.scalar_one_or_none() 
+        result = await session.execute(select(DoctorScan).where(DoctorScan.id == scan_id))                         
+        result = result.scalar_one_or_none() 
     
     if not scan:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": "Скан с данным id не найден"}
         )
-    
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "id": scan.id,
-            "image_base64": scan.image_base64,
-            "response" : scan.response,
-            "percent" : scan.percent,
-            "type" : scan.type,
-            "result" : scan.result,
-            "recommendations": scan.recommendations,
-            "created_at": scan.created_at.isoformat() if isinstance(scan.created_at, datetime) else scan.created_at
+            "id": result.id,
+            "image_base64": result.image_base64 if "image_base64" in result.__dict__ else None,
+            "response" : result.response if "response" in result.__dict__ else None,
+            "percent" : result.percent if "percent" in result.__dict__ else None,
+            "type" : result.type if "type" in result.__dict__ else None,
+            "result" : result.result if "result" in result.__dict__ else None,
+            "recommendations": result.recommendations if "recommendations" in result.__dict__ else None,
+            "created_at": result.created_at.isoformat() if isinstance(scan.created_at, datetime) else scan.created_at
         }
     ) 
