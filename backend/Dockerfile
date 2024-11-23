@@ -15,6 +15,8 @@ WORKDIR /app
 
 # Копируем requirements.txt и устанавливаем зависимости
 COPY ./requirements.txt ./requirements.txt
+COPY requirements.txt constraints.txt ./
+
 
 # Очищаем кеш pip перед установкой зависимостей и устанавливаем их
 RUN pip cache purge && \
