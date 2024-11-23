@@ -4,7 +4,7 @@ from transformers import AutoImageProcessor, AutoModelForImageClassification
 import base64
 import numpy as np
 
-def get_answer(image_base64 : str):
+def get_skin_answer(image_base64 : str):
     
     if image_base64.startswith("data:image/jpeg;base64,"):
         image_base64 = image_base64.split(",")[1]

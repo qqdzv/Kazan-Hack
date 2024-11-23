@@ -1,5 +1,3 @@
-
-
 from fastapi import APIRouter, Depends, status
 
 from sqlalchemy import select, and_
@@ -20,7 +18,7 @@ from src.doctor.base_config import get_current_doctor
 from fastapi.responses import JSONResponse
 from typing import List
 from datetime import datetime
-from src.scan.models import Scan, ScanFolder, EyeScan
+from src.scan.models import Scan, ScanFolder, EyeScan, SkinScan
 from src.scan.schemas import ScanResponse,ScanInfo, ScanAddNew,Folder
 from pydantic import BaseModel
 from src.logger import logger
@@ -30,7 +28,8 @@ from src.scan.test_support import generate_user_report
 from src.doctor.models import DoctorScan
 from src.scan.ml.segmnetation import png_to_base64, get_segmentation
 
-from src.scan.ml.skin_disease_analysis import get_answer
+from src.scan.ml.skin_disease_analysis import get_skin_answer
+from src.scan.ml.eye_disease_analysis import get_eye_answer
 import os
 from src.scan.doctor_support import generate_doctor_report
 from src.scan.ml.abcd_generate import get_absd_score
@@ -88,6 +87,60 @@ class ForwardScan(BaseModel):
 class ScanEyeNew(BaseModel):
     folder_name : str
     image_base64 : str
+
+class ScanSkinNew(BaseModel):
+    folder_name : str
+    image_base64 : str
+
+@router.post("/send_skin")
+async def send_eye(new_scan : ScanSkinNew, user: User|None = Depends(get_current_user), session: AsyncSession = Depends(get_async_session)) -> JSONResponse:
+    if isinstance(user, JSONResponse):
+        return user
+    
+    new_eye_scan = SkinScan(
+        sender_id=user.id,
+        image_base64=new_scan.image_base64
+    )
+    session.add(new_eye_scan)
+    await session.commit()  # Подтверждаем изменения в базе данных
+    await session.refresh(new_eye_scan)  # Обновляем экземпляр, чтобы получить новые значения (например, ID)
+    
+    existing_folder = await session.execute(
+        select(ScanFolder).filter(
+            ScanFolder.sender_id == user.id,
+            ScanFolder.folder_name == new_scan.folder_name
+        )
+    )
+    existing_folder = existing_folder.scalar_one_or_none()
+    
+    if not existing_folder:
+        # Создаем экземпляр модели Message
+        existing_folder = ScanFolder(
+            sender_id=user.id,
+            folder_name=new_scan.folder_name
+        )
+        session.add(existing_folder)
+        await session.commit()  # Подтверждаем изменения в базе данных
+        await session.refresh(existing_folder)  # Обновляем экземпляр, чтобы получить новые значения (например, ID)
+        logger.info(f"создаем папку {new_scan.folder_name}")
+    
+    new_eye_scan.folder_id = existing_folder.id
+    
+    await session.commit()
+    
+    result = await run_in_threadpool(get_skin_answer,image_base64=new_eye_scan.image_base64)
+
+    new_eye_scan.response = result
+    await session.commit()
+    
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "id": new_eye_scan.id,
+            "response": result,
+            "image_base64" : new_scan.image_base64  
+        }
+    )
     
 @router.post("/send_eye")
 async def send_eye(new_scan : ScanEyeNew, user: User|None = Depends(get_current_user), session: AsyncSession = Depends(get_async_session)) -> JSONResponse:
@@ -125,7 +178,7 @@ async def send_eye(new_scan : ScanEyeNew, user: User|None = Depends(get_current_
     
     await session.commit()
     
-    result = await run_in_threadpool(get_answer,image_base64=new_eye_scan.image_base64)
+    result = await run_in_threadpool(get_eye_answer,image_base64=new_eye_scan.image_base64)
 
     new_eye_scan.response = result
     await session.commit()
@@ -408,7 +461,7 @@ async def get_all_scans(user: User|None = Depends(get_current_user), session: As
         )
     )
     
-    skins = [
+    skin = [
         {
             "id": message.id,
             "image_base64": message.image_base64,
@@ -448,7 +501,32 @@ async def get_all_scans(user: User|None = Depends(get_current_user), session: As
         for message in (scans.scalars().all())  # Используйте await для асинхронного запроса
     ]
     
-    history = eyes+skins
+    scans = await session.execute(
+        select(EyeScan).where(
+            and_(
+                EyeScan.sender_id == user.id
+            )
+        )
+    )
+    
+    skins = [
+        {
+            "id": message.id,
+            "image_base64": message.image_base64,
+            "folder_id": message.folder_id,
+            "response": message.response,
+            "percent": "",
+            "type": "",
+            "result": "",
+            "scan_type": "skins",
+            "recommendations": "",
+            "created_at": message.created_at.isoformat() if isinstance(message.created_at, datetime) else message.created_at
+        }
+        for message in (scans.scalars().all())  # Используйте await для асинхронного запроса
+    ]
+    
+    
+    history = eyes+skins+skin
     history = sorted(history, key=lambda x: x["created_at"])
     return JSONResponse(
         status_code=status.HTTP_200_OK,
