@@ -21,6 +21,7 @@ from src.doctor.models import *
 from src.messages.models import *
 from src.test.models import *
 from src.private_api.models import *
+from src.medcard.models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

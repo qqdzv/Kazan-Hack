@@ -37,35 +37,102 @@ from src.scan.ml.eye_disease_analysis import get_eye_answer
 import os
 from src.scan.doctor_support import generate_doctor_report
 from src.scan.ml.abcd_generate import get_absd_score
-
+from src.medcard.scan_reader import process_image, process_image_to_json
+from src.medcard.models import MedCard
 
 router = APIRouter(
     prefix="/medcard",
     tags=["Med Card"]
 )
 
-# Папка для сохранения загруженных файлов
-UPLOAD_FOLDER = "uploaded_files"
+class MedCardRead(BaseModel):
+    type_analysis : str
+    data : datetime
+    text : str
+    
+UPLOAD_FOLDER = "upload_images"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-@router.post("/upload")
-async def upload_audio_file(audio: UploadFile = File(...), user: User|None = Depends(get_current_user)) -> JSONResponse:
-    
-    if audio.content_type != "audio/wav":
+@router.post("/upload_document")
+async def upload_and_process_file(
+    file: UploadFile = File(...),
+    user: User | None = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session)
+) -> JSONResponse:
+    # Проверяем, авторизован ли пользователь
+    if user is None:
         return JSONResponse(
-            content={"message": "Invalid file type. Please upload a WAV file."},
+            status_code=401,
+            content = {"detail" : "Unauthorized"}
+        )
+
+    # Допустимые типы файлов
+    allowed_content_types = ["application/pdf", "image/jpeg", "image/png"]
+    if file.content_type not in allowed_content_types:
+        return JSONResponse(
+            content={"detail": "Неверный тип документы. Пожалуйста загрузите PDF, JPG, или PNG файл."},
             status_code=400,
         )
 
-    # Путь для сохранения файла
-    file_path = os.path.join(UPLOAD_FOLDER, audio.filename)
-    
     # Сохранение файла
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(audio.file, buffer)
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"detail":f"Ошибка сохранения файла: {e}"})
+
+    # Препроцессинг файла
+    try:
+        answer = await process_image_to_json(file_path)
+        data = datetime(
+            int(answer["data"].split('.')[2]), 
+            int(answer["data"].split('.')[1]), 
+            int(answer["data"].split('.')[0]),
+        ) 
+        medcard = MedCard(
+            user_id = user.id,
+            type_analysis = answer["type_analysis"],
+            data = data,
+            text = answer["text"]
+        )
+        session.add(medcard)
+        await session.commit()
+        return JSONResponse(
+            status_code=200,
+            content={"detail": "File processed successfully!"},
+        )
+    except ValueError as ve:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": str(ve)},
+        )
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"detail":f"Error processing file: {e}"})
+
+@router.get("/get_my_documents")
+async def upload_and_process_file(
+    user: User | None = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session)
+) -> JSONResponse:
     
+    if user is None:
+        return JSONResponse(
+            status_code=401,
+            content = {"detail" : "Unauthorized"}
+        )
+
+    result = await session.execute(select(MedCard).where(MedCard.user_id==user.id))
+    
+    all_documents = [
+        {
+            'type_analysis' : document.type_analysis,
+            'data' : document.data.isoformat() if isinstance(document.data, datetime) else document.data,
+            'text' : document.text
+        }
+        for document in result.scalars().all()
+    ]
     return JSONResponse(
         status_code=200,
-        content={"message": f"File {audio.filename} uploaded successfully!"}
+        content=all_documents
     )
-
