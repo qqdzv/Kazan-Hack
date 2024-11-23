@@ -26,6 +26,9 @@ import ScanReportPage from './pages/ScanReportPage/ScanReportPage.vue';
 import AllDoctorsPage from './pages/PatientFlow/AllDoctorsPage/AllDoctorsPage.vue';
 import call from './pages/videoCall/call.vue';
 
+import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura';
+
 const routes = [
     {
         path: '/select',
@@ -105,4 +108,12 @@ router.beforeEach((to, from, next) => {
 });
 const pinia = createPinia();
 
-createApp(App).use(pinia).use(router).mount('#app');
+createApp(App)
+    .use(pinia)
+    .use(router)
+    .use(PrimeVue, {
+        theme: {
+            preset: Aura,
+        },
+    })
+    .mount('#app');

@@ -10,9 +10,11 @@
         "format": "prettier --write ."
     },
     "dependencies": {
+        "@primevue/themes": "^4.2.3",
         "axios": "^1.7.7",
         "cropperjs": "^1.6.2",
         "pinia": "^2.2.5",
+        "primevue": "^4.2.3",
         "three": "^0.170.0",
         "vite-tsconfig-paths": "^5.0.1",
         "vue": "^3.5.12",

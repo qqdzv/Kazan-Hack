@@ -9,7 +9,7 @@
         </header>
 
         <div class="videoButtonWrapper">
-            <div @click="fetchDateCall()" :style="{ display: 'flex', backgroundColor: '#D1F3ED', justifyContent: 'center', borderRadius: '12px', padding: '10px', color: '#16C4A4', fontFamily: 'var(--font-main)', width: '220px', fontWeight: 'bold' }">
+            <div @click="visible = true" :style="{ display: 'flex', backgroundColor: '#D1F3ED', justifyContent: 'center', borderRadius: '12px', padding: '10px', color: '#16C4A4', fontFamily: 'var(--font-main)', width: '220px', fontWeight: 'bold' }">
                 <img src="/img/videoCall/startContent.png" />
                 <p :style="{ paddingLeft: '5px' }">Записаться</p>
             </div>
@@ -38,6 +38,17 @@
         </div>
 
         <input type="file" accept="image/*" ref="fileInput" class="hidden" :style="{ opacity: '0' }" @change="onFileChange" />
+        <Dialog v-model:visible="visible" modal header="Выбор даты для записи к врачу" :style="{ width: '50rem', backgroundColor: 'white', fontFamily: 'var(--font-main)', color: 'black' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div :style="{ display: 'flex', flexDirection: 'column', alignItems: 'center' }">
+                <div class="flex-auto">
+                    <DatePicker id="datepicker-24h" v-model="datetime24h" showTime hourFormat="24" fluid />
+                </div>
+
+                <div @click="fetchDateCall()" :style="{ display: 'flex', marginTop: '15px', backgroundColor: '#D1F3ED', justifyContent: 'center', borderRadius: '12px', padding: '10px', color: '#16C4A4', fontFamily: 'var(--font-main)', width: '220px', fontWeight: 'bold' }">
+                    <p :style="{ paddingLeft: '5px' }">Записаться</p>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 
@@ -52,6 +63,8 @@ import { Doctor, Patient, useUserStore } from '@/store/useUserStore';
 import { Message } from './AllChatsPage.vue';
 import LoaderComp from '@/components/LoaderComp.vue';
 import MainButton from '@/ui/MainButton.vue';
+import Dialog from 'primevue/dialog';
+import DatePicker from 'primevue/datepicker';
 
 const goToVideoCall = () => {
     console.log('Переход на /videoCall');
@@ -98,6 +111,10 @@ const imageUrl = ref<string | null>(null);
 const loaded = ref(false);
 const isLink = ref(false);
 const confTime = ref('');
+const visible = ref(false);
+const datetime24h = ref();
+const time = ref();
+
 // Ссылки на сторы пользователя и роли
 const roleStore = useRoleStore();
 const userStore = useUserStore();
@@ -188,19 +205,46 @@ const onFileChange = (event: Event) => {
     }
 };
 
+// const fetchDateCall = async () => {
+//     try {
+//         const response = await api.postData('/messages/conference', {
+//             receiver_id: receiverId.value,
+//             conference_time: '2024-11-23T03:03:23.198Z',
+//         });
+
+//         const conferenceData = response as ConferenceResponse;
+//         isLink.value = conferenceData.have_link;
+//         confTime.value = conferenceData.conference_time;
+//         visible.value = false;
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
+
 const fetchDateCall = async () => {
     try {
+        // Убедитесь, что дата выбрана
+        if (!datetime24h.value) {
+            console.error('Дата не выбрана');
+            return;
+        }
+
+        // Преобразование даты в ISO-формат
+        const selectedDate = new Date(datetime24h.value).toISOString();
+
+        // Отправка на сервер
         const response = await api.postData('/messages/conference', {
             receiver_id: receiverId.value,
-            conference_time: '2024-11-23T03:03:23.198Z',
+            conference_time: selectedDate,
         });
 
+        // Обработка ответа
         const conferenceData = response as ConferenceResponse;
         isLink.value = conferenceData.have_link;
         confTime.value = conferenceData.conference_time;
-        console.log(isLink.value, confTime.value + 'owurihf');
+        visible.value = false;
     } catch (error) {
-        console.error(error);
+        console.error('Ошибка при создании конференции:', error);
     }
 };
 
