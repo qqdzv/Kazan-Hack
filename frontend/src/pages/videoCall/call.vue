@@ -6,7 +6,7 @@ import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
 
 const localStream = ref<MediaStream | null>(null);
 const peerConnection = ref<RTCPeerConnection | null>(null);
-const socket = new WebSocket('wss://skin-cancer.ru/ws/');
+const socket = new WebSocket('wss://tele-doctor-test.dev/ws/');
 
 const router = useRouter();
 
