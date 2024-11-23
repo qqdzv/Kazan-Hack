@@ -3,15 +3,16 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useUserStore } from './useUserStore';
 export interface Scan {
-    id:number;
-    folder_id:number;
-    response:string;
-    percent:number;
-    type:string;
-    result:string;
-    recommendations:string;
-    image_base64:string;
-    created_at:string;
+    id: number;
+    folder_id: number;
+    response: string;
+    percent: number;
+    type: string;
+    result: string;
+    recommendations: string;
+    image_base64: string;
+    created_at: string;
+    scan_type: string;
 }
 // Обновленный интерфейс Folder
 export interface Folder {
@@ -47,5 +48,5 @@ export const useScansStore = defineStore('scan', () => {
     const setAllScans = (newScans: Scan[]) => {
         scans.value = newScans;
     };
-    return {scans, folders, setFolders, getFolders, getAllScans, setAllScans };
+    return { scans, folders, setFolders, getFolders, getAllScans, setAllScans };
 });
