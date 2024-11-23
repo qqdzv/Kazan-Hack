@@ -102,7 +102,7 @@ const goBack = () => {
 onMounted(() => {
     setTimeout(() => {
         isLoading.value = false;
-    }, 2000); //3000
+    }, 200); //3000
 });
 </script>
 

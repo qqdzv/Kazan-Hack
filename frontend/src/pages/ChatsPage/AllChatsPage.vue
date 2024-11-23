@@ -64,6 +64,8 @@ export interface Message {
     receiver_name: string;
     content: string;
     created_at: string;
+    conference_time: string;
+    have_link: boolean;
 }
 
 const userStore = useUserStore();

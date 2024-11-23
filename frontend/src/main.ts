@@ -75,7 +75,7 @@ const routes = [
     { path: '/quiz', component: QuizPage },
     { path: '/scanReport', component: ScanReportPage },
     { path: '/allDoctors', component: AllDoctorsPage },
-    { path: '/videoCall', component: MainLayout, children: [{ path: '', component: call }] },
+    { path: '/videoCall', component: call },
 ];
 
 const router = createRouter({

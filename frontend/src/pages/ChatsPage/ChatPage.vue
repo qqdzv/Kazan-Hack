@@ -7,6 +7,14 @@
                 <p>{{ speciality }}</p>
             </div>
         </header>
+
+        <div class="videoButtonWrapper">
+            <div @click="fetchDateCall()" :style="{ display: 'flex', backgroundColor: '#D1F3ED', justifyContent: 'center', borderRadius: '12px', padding: '10px', color: '#16C4A4', fontFamily: 'var(--font-main)', width: '220px', fontWeight: 'bold' }">
+                <img src="/img/videoCall/startContent.png" />
+                <p :style="{ paddingLeft: '5px' }">Записаться</p>
+            </div>
+        </div>
+
         <main class="chatBody">
             <div v-for="(message, index) in messages" :key="index" :class="['message', { 'message-user': message.sender_type === 'user', 'message-doctor': message.sender_type === 'doctor' }]">
                 <div class="messageBox">
@@ -17,6 +25,8 @@
                 <span :class="['time', { 'time-user': message.sender_type === 'user', 'time-doctor': message.sender_type === 'doctor' }]">
                     {{ message.created_at ? formatDate(message.created_at).time : '' }}
                 </span>
+
+                <MainButton v-if="message.conference_time" text="Видео встреча" :style="{ backgroundColor: '#D1F3ED', text: '#16C4A4' }" class="btn_1" @click="router.push('/videoCall')" :width="220" />
             </div>
         </main>
 
@@ -27,7 +37,7 @@
             <CustomIcon id="send" :width="32" :height="32" class="sendIcon" @click="sendMessage" />
         </div>
 
-        <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="onFileChange" />
+        <input type="file" accept="image/*" ref="fileInput" class="hidden" :style="{ opacity: '0' }" @change="onFileChange" />
     </div>
 </template>
 
@@ -57,7 +67,23 @@ interface ChatMessage {
     created_at?: string;
     reciver_type?: string;
     image_base64: string;
+    conference_time: string;
+    have_link: boolean;
 }
+
+type ConferenceResponse = {
+    id: number;
+    sender_id: number;
+    sender_type: string;
+    receiver_id: number;
+    receiver_type: string;
+    receiver_name: string;
+    content: string;
+    image_base64: string | null;
+    conference_time: string;
+    have_link: boolean;
+    created_at: string;
+};
 
 const router = useRouter();
 const route = useRoute();
@@ -70,10 +96,11 @@ const lastName = ref('');
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageUrl = ref<string | null>(null);
 const loaded = ref(false);
+const isLink = ref(false);
+const confTime = ref('');
 // Ссылки на сторы пользователя и роли
 const roleStore = useRoleStore();
 const userStore = useUserStore();
-
 // Получение пользователя по ID и обновление данных
 const fetchUserById = async (user_id: number) => {
     try {
@@ -97,6 +124,8 @@ const sendMessage = async () => {
         text: newMessage.value,
         created_at: new Date().toISOString(),
         image_base64: imageUrl.value || '',
+        conference_time: '',
+        have_link: false,
     };
     messages.value.push(userMessage);
 
@@ -124,7 +153,11 @@ const fetchMessages = async (receiverId: number) => {
                 text: msg.content,
                 created_at: new Date(new Date(msg.created_at).getTime() + 3 * 60 * 60 * 1000).toISOString(),
                 image_base64: msg.image_base64 || '',
+                have_link: msg.have_link,
+                conference_time: msg.conference_time,
             }));
+
+            isLink.value = response.some((msg: Message) => msg.have_link);
         }
     } catch (error) {
         console.error('Ошибка при получении сообщений:', error);
@@ -155,6 +188,22 @@ const onFileChange = (event: Event) => {
     }
 };
 
+const fetchDateCall = async () => {
+    try {
+        const response = await api.postData('/messages/conference', {
+            receiver_id: receiverId.value,
+            conference_time: '2024-11-23T03:03:23.198Z',
+        });
+
+        const conferenceData = response as ConferenceResponse;
+        isLink.value = conferenceData.have_link;
+        confTime.value = conferenceData.conference_time;
+        console.log(isLink.value, confTime.value + 'owurihf');
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 onMounted(async () => {
     receiverId.value = Number(route.params.id);
     console.log(receiverId.value);
@@ -178,6 +227,16 @@ const autoResize = (event: Event) => {
 </script>
 
 <style lang="scss" scoped>
+.videoButtonWrapper {
+    position: fixed;
+    top: 70px; /* Расстояние от верхнего края, под header */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10; /* Над содержимым сообщений */
+    padding: 10px;
+    border-radius: 8px; /* Опционально, для стиля */
+}
+
 .borderPic {
     margin-bottom: 3px;
     padding-right: 6px;

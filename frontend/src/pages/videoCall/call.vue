@@ -135,26 +135,28 @@ const endCall = (): void => {
 </script>
 
 <template>
-    <h4>Хирург Хирургович</h4>
+    <div class="mainLayout">
+        <h4>Хирург Хирургович</h4>
 
-    <div class="video-container" :style="{ marginTop: '30px' }">
-        <video ref="localVideo" autoplay muted></video>
-        <video ref="remoteVideo" autoplay></video>
+        <div class="video-container" :style="{ marginTop: '30px' }">
+            <video ref="localVideo" autoplay muted></video>
+            <video ref="remoteVideo" autoplay></video>
 
-        <div class="button-container">
-            <MainButton v-if="!calling" @click="handleStartCall" type="primary" text="Подключиться" :width="205"></MainButton>
+            <div class="button-container">
+                <MainButton v-if="!calling" @click="handleStartCall" type="primary" text="Подключиться" :width="205"></MainButton>
 
-            <div v-if="calling" :style="{ display: 'flex' }">
-                <div :style="{ backgroundColor: '#E1DEDE', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
-                    <img src="/img/videoCall/mute.png" alt="banner_1" />
-                </div>
+                <div v-if="calling" :style="{ display: 'flex' }">
+                    <div :style="{ backgroundColor: '#E1DEDE', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
+                        <img src="/img/videoCall/mute.png" alt="banner_1" />
+                    </div>
 
-                <div @click="endCall" :style="{ backgroundColor: '#E57676', marginLeft: '25px', marginRight: '25px', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
-                    <img src="/img/videoCall/phone-call-end.png" alt="banner_1" />
-                </div>
+                    <div @click="endCall" :style="{ backgroundColor: '#E57676', marginLeft: '25px', marginRight: '25px', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
+                        <img src="/img/videoCall/phone-call-end.png" alt="banner_1" />
+                    </div>
 
-                <div :style="{ backgroundColor: '#E1DEDE', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
-                    <img src="/img/videoCall/video-off.png" alt="banner_1" />
+                    <div :style="{ backgroundColor: '#E1DEDE', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
+                        <img src="/img/videoCall/video-off.png" alt="banner_1" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -162,6 +164,15 @@ const endCall = (): void => {
 </template>
 
 <style lang="scss" scoped>
+.mainLayout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100dvh;
+    padding: 30px 20px 72px 20px;
+}
+
 .video-container {
     margin-top: 0; /* Убираем отступ сверху */
     display: flex;
@@ -188,7 +199,7 @@ const endCall = (): void => {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(33% - 10px); /* Растягиваем кнопку на 1/3 высоты */
+            height: 100%;
         }
     }
 }
