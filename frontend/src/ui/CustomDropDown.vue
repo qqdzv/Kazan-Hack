@@ -3,6 +3,7 @@
         <div class="labelWrapper">
             <label>{{ text }}</label>
         </div>
+
         <div class="custom-dropdown" @click="toggleDropdown">
             <div class="selected">{{ modelValue || placeholder }}</div>
             <div v-if="isOpen" class="options">

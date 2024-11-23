@@ -5,7 +5,8 @@
         <CustomMenuLink :to="`/patient/history`" icon="scan" text="История" v-if="role.role === 'patient'" />
         <CustomMenuLink :to="`/patient/chats`" icon="doctor" text="Врач" v-if="role.role === 'patient'" />
         <CustomMenuLink :to="`/ai_chat`" icon="chat" text="АI бот" />
-        <CustomIcon id="camera" :width="52" :height="52" @click="router.push('/camera')" />
+        <!-- <CustomIcon id="camera" :width="52" :height="52" @click="router.push('/camera')" /> -->
+        <CustomMenuLink :to="`/cameraScan`" icon="camera" text="Сканер" v-if="role.role === 'patient'" />
     </nav>
 </template>
 

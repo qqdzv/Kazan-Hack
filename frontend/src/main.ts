@@ -116,6 +116,9 @@ createApp(App)
     .use(PrimeVue, {
         theme: {
             preset: Aura,
+            options: {
+                darkModeSelector: '.my-app-light',
+            },
         },
     })
     .mount('#app');

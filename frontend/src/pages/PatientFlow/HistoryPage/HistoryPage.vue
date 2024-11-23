@@ -9,10 +9,16 @@
                     <div class="skeleton skeleton-text-line small"></div>
                 </div>
             </div>
+
             <div v-else v-for="scan in scans" :key="scan.id" class="scan" @click="router.push({ path: '/scanReport', query: { scanID: scan.id } })">
                 <img :src="scan.image_base64" alt="scan" />
                 <div class="texts">
-                    <h4>{{ extractTextInParentheses(scan.response) }}</h4>
+                    <h4 v-if="scan.scan_type === 'skin'">{{ extractTextInParentheses(scan.response) }}</h4>
+
+                    <h4 v-if="scan.scan_type === 'eye'">{{ scan.response }}</h4>
+
+                    <h4 v-if="scan.scan_type === 'skins'">{{ scan.response }}</h4>
+
                     <div class="date"><CustomIcon id="clock" :width="24" :height="24" /> {{ scan?.created_at ? formatDate(scan.created_at).date : '' }}</div>
                 </div>
                 <CustomIcon id="blueArrow" :width="24" :height="24" class="blueArrow" />
@@ -103,7 +109,7 @@ onMounted(async () => {
                 h4 {
                     color: #000;
                     font-family: var(--font-main);
-                    font-size: 20px;
+                    font-size: 12px;
                     font-style: normal;
                     font-weight: 700;
                     line-height: normal;
