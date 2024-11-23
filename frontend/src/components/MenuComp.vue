@@ -3,9 +3,9 @@
         <CustomMenuLink :to="`/doctor/chats`" icon="docChats" text="Пациенты" v-if="role.role === 'doctor'" />
         <CustomMenuLink :to="`/patient/home`" icon="home" text="Главная" v-if="role.role === 'patient'" />
         <CustomMenuLink :to="`/patient/history`" icon="scan" text="История" v-if="role.role === 'patient'" />
+        <CustomMenuLink :to="`/patient/chats`" icon="doctor" text="Врач" v-if="role.role === 'patient'" />
+        <CustomMenuLink :to="`/ai_chat`" icon="chat" text="АI бот" />
         <CustomIcon id="camera" :width="52" :height="52" @click="router.push('/camera')" />
-        <CustomMenuLink :to="`/ai_chat`" icon="chat" text="АI-чат" />
-        <CustomMenuLink :to="`/patient/chats`" icon="doctor" text="Доктор" v-if="role.role === 'patient'" />
     </nav>
 </template>
 

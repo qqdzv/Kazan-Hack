@@ -9,17 +9,16 @@
                 <MainButton text="Сканировать" type="primary" className="btn_1" icon="scan" @click="router.push('/camera')" />
                 <img src="/img/homepage/pic1.png" alt="banner_1" />
             </div>
-            <!-- <div class="banner_2" v-if="user?.role === 'user'">
+
+            <div class="banner_2" v-if="user?.role === 'user'">
                 <div class="texts">
-                    <h3>{{ testBannerText }}</h3>
-                    <p>
-                        Он поможет нам делать<br />
-                        сканирования более точными
-                    </p>
+                    <h3>Сканер глаз</h3>
+                    <p>Исследуйте Ваши глаза</p>
                 </div>
-                <MainButton :text="testBtn" type="primary" className="btn_2" @click="router.push('/test')" />
-                <img src="/img/homepage/pic2.png" alt="banner_1" />
-            </div> -->
+                <MainButton text="Сканировать" type="primary" className="btn_2" icon="scan" @click="router.push('/test')" />
+                <img src="/img/homepage/glaz.png" alt="banner_1" />
+            </div>
+
             <div class="folders_banners">
                 <div class="banner_3" v-if="folders" v-for="folder in folders" :key="folder.id" @click="router.push({ path: `/patient/folder/${folder.id}` })">
                     <div class="texts">
@@ -127,7 +126,7 @@ const router = useRouter();
             padding: 24px;
 
             border-radius: 24px;
-            background: #caffe6;
+            background: #e3f2fd;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -171,7 +170,7 @@ const router = useRouter();
                 gap: 8px;
                 flex-shrink: 0;
                 border-radius: 12px;
-                background: #3dbf89;
+                background: #418af9;
             }
         }
         .banner_3 {
