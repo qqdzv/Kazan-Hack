@@ -1,6 +1,6 @@
 FROM python:3.11
 
-# Установка необходимых системных зависимостей
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libgl1 \
     tesseract-ocr \
@@ -10,16 +10,17 @@ RUN apt-get update && apt-get install -y \
     libleptonica-dev && \
     apt-get clean
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем requirements.txt и устанавливаем зависимости
+# Clear pip cache and install dependencies
+RUN pip cache purge
+
+# Install pip dependencies from requirements.txt
 COPY ./requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt  # Use --no-cache-dir to prevent using pip cache
 
-# Очищаем кеш pip перед установкой зависимостей и устанавливаем их
-RUN pip cache purge && \
-    pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Copy project files
+COPY . .
 
-# Копируем весь проект в контейнер
-COPY . /app
+# Set the working directory in the container
+WORKDIR /app
