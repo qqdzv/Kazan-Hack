@@ -8,6 +8,10 @@ from pdf2image import convert_from_path
 from src.config import CHAT_BOT_API
 import asyncio
 
+
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+
+
 def process_image(img_path: str) -> Image:
     # Get the file extension
     file_extension = os.path.splitext(img_path)[1].lower()
