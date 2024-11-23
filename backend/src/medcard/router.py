@@ -122,6 +122,7 @@ async def get_my_documents(
             content = {"detail" : "Unauthorized"}
         )
 
+
     result = await session.execute(select(MedCard).where(MedCard.user_id==user.id))
     
     all_documents = [
