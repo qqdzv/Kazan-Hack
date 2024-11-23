@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Очищаем кеш pip перед установкой зависимостей
+RUN pip cache purge
+
 # Устанавливаем зависимости
 RUN pip install --upgrade pip
 COPY ./requirements.txt ./requirements.txt
