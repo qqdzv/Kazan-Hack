@@ -62,7 +62,8 @@ origins = [
     "http://0.0.0.0:8000",
     "http://localhost:8000",
     "https://d037-185-244-218-22.ngrok-free.app",
-    "https://skin-cancer.ru"
+    "https://skin-cancer.ru",
+    "https://tele-teledoc.ru"
 ]
 
 app.add_middleware(

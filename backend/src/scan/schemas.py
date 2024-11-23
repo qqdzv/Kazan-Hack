@@ -6,6 +6,7 @@ from enum import Enum
 class ScanType(str, Enum):
     eye = "eye"
     skin = "skin"
+    skins = "skins"
     
 class BodyPart(str, Enum):
     anterior_torso = "anterior torso"  # Передняя часть торса
