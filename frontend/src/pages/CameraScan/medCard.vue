@@ -1,6 +1,6 @@
 <template>
     <main class="folder">
-        <h3>{{ isLoading ? 'Загрузка...' : 'Мои сканы' }}</h3>
+        <h3>{{ isLoading ? 'Загрузка...' : 'Медкарта' }}</h3>
         <div class="scans">
             <div v-for="n in 3" :key="n" class="skeleton-scan" v-if="isLoading">
                 <div class="skeleton skeleton-img"></div>
@@ -13,11 +13,11 @@
             <div v-else v-for="scan in scans" :key="scan.id" class="scan" @click="router.push({ path: '/scanReport', query: { scanID: scan.id } })">
                 <img :src="scan.image_base64" alt="scan" />
                 <div class="texts">
-                    <h4>{{ extractTextInParentheses(scan.response) }}</h4>
+                    <h4 v-if="scan.scan_type === 'skin'">{{ extractTextInParentheses(scan.response) }}</h4>
 
-                    <!-- <h4 v-if="scan.scan_type === 'eye'">{{ scan.response }}</h4>v-if="scan.scan_type === 'skin'"
+                    <h4 v-if="scan.scan_type === 'eye'">{{ scan.response }}</h4>
 
-                    <h4 v-if="scan.scan_type === 'skins'">{{ scan.response }}</h4> -->
+                    <h4 v-if="scan.scan_type === 'skins'">{{ scan.response }}</h4>
 
                     <div class="date"><CustomIcon id="clock" :width="24" :height="24" /> {{ scan?.created_at ? formatDate(scan.created_at).date : '' }}</div>
                 </div>

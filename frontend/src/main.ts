@@ -26,6 +26,7 @@ import ScanReportPage from './pages/ScanReportPage/ScanReportPage.vue';
 import AllDoctorsPage from './pages/PatientFlow/AllDoctorsPage/AllDoctorsPage.vue';
 import call from './pages/videoCall/call.vue';
 import cameraScan from './pages/CameraScan/cameraScan.vue';
+import medCard from './pages/CameraScan/medCard.vue';
 
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
@@ -83,6 +84,7 @@ const routes = [
     { path: '/videoCall', component: call },
     { path: '/Eye', component: EyeResult },
     { path: '/cameraScan', component: MainLayout, children: [{ path: '', component: cameraScan }] },
+    { path: '/medCard', component: MainLayout, children: [{ path: '', component: medCard }] },
 ];
 
 const router = createRouter({
