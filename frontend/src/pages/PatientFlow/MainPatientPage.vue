@@ -32,6 +32,7 @@
                     <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
                 </div>
             </div>
+            <MainButton text="Видео встреча" :style="{ backgroundColor: '#D1F3ED', text: '#16C4A4' }" class="btn_1" @click="router.push('/videoCall')" :width="220" />
         </section>
     </main>
 </template>

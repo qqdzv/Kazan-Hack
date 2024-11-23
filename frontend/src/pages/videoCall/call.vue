@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import MainButton from '@/ui/MainButton.vue';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
 
-const localStream = ref<MediaStream | null>(null); // Типизация с учетом null
-const peerConnection = ref<RTCPeerConnection | null>(null); // Типизация с учетом null
+const localStream = ref<MediaStream | null>(null);
+const peerConnection = ref<RTCPeerConnection | null>(null);
 const socket = new WebSocket('ws://skin-cancer.ru:5000');
 const router = useRouter();
 
-const localVideo = ref<HTMLVideoElement | null>(null); // Типизация с учетом null
-const remoteVideo = ref<HTMLVideoElement | null>(null); // Типизация с учетом null
+const localVideo = ref<HTMLVideoElement | null>(null);
+const remoteVideo = ref<HTMLVideoElement | null>(null);
 const calling = ref(false);
+const recorder = ref<RecordRTC | null>(null);
+const recording = ref(false);
 
 const config = {
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
-// Функция для старта медиа потока
 const startMedia = async (): Promise<void> => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -29,34 +31,29 @@ const startMedia = async (): Promise<void> => {
     }
 };
 
-// Функция для старта звонка
 const startCall = (): void => {
-    if (!localStream.value) return; // Проверка на null
+    if (!localStream.value) return;
 
     peerConnection.value = new RTCPeerConnection(config);
 
-    // Отправляем медиапоток на удаленный клиент
     localStream.value.getTracks().forEach((track) => {
         if (peerConnection.value) {
-            peerConnection.value.addTrack(track, localStream.value!); // Убираем null с помощью оператора !
+            peerConnection.value.addTrack(track, localStream.value!);
         }
     });
 
-    // Обработка ICE кандидатов
     peerConnection.value.onicecandidate = (event) => {
         if (event.candidate) {
             socket.send(JSON.stringify({ type: 'ice-candidate', candidate: event.candidate }));
         }
     };
 
-    // Прием видеопотока от удаленного клиента
     peerConnection.value.ontrack = (event) => {
         if (remoteVideo.value) {
             remoteVideo.value.srcObject = event.streams[0];
         }
     };
 
-    // Создание предложения (offer)
     peerConnection.value
         .createOffer()
         .then((offer) => peerConnection.value?.setLocalDescription(offer))
@@ -73,7 +70,6 @@ const startCall = (): void => {
         });
 };
 
-// Обработка сообщений от сервера сигнализации
 socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
 
@@ -119,15 +115,37 @@ socket.onmessage = (event) => {
     }
 };
 
-// Старт видеозвонка
 const handleStartCall = async (): Promise<void> => {
     await startMedia();
     startCall();
+    startRecording(); // Начало записи после старта звонка
     calling.value = true;
 };
 
-// Завершение звонка и возврат на домашнюю страницу
+const startRecording = (): void => {
+    if (localStream.value) {
+        recorder.value = new RecordRTC(localStream.value, { type: 'audio' });
+        recorder.value.startRecording();
+        recording.value = true;
+    } else {
+        console.error('Local stream is not available for recording.');
+    }
+};
+
+const stopRecording = (): void => {
+    if (recorder.value) {
+        recorder.value.stopRecording(() => {
+            const blob = recorder.value!.getBlob();
+            invokeSaveAsDialog(blob, 'recording.wav');
+            recorder.value!.destroy();
+            recorder.value = null;
+        });
+        recording.value = false;
+    }
+};
+
 const endCall = (): void => {
+    stopRecording(); // Завершение записи перед завершением звонка
     router.push('/patient/home').then(() => {
         location.reload();
     });
@@ -142,15 +160,15 @@ const endCall = (): void => {
             <video ref="localVideo" autoplay muted></video>
             <video ref="remoteVideo" autoplay></video>
 
-            <div class="button-container">
-                <MainButton v-if="!calling" @click="handleStartCall" type="primary" text="Подключиться" :width="205"></MainButton>
+            <div class="button-container" :style="{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }">
+                <MainButton v-if="!calling" @click="handleStartCall()" type="primary" text="Подключиться" :width="205"></MainButton>
 
                 <div v-if="calling" :style="{ display: 'flex' }">
                     <div :style="{ backgroundColor: '#E1DEDE', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
                         <img src="/img/videoCall/mute.png" alt="banner_1" />
                     </div>
 
-                    <div @click="endCall" :style="{ backgroundColor: '#E57676', marginLeft: '25px', marginRight: '25px', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
+                    <div @click="endCall()" :style="{ backgroundColor: '#E57676', marginLeft: '25px', marginRight: '25px', padding: '15px', borderRadius: '100%', cursor: 'pointer' }">
                         <img src="/img/videoCall/phone-call-end.png" alt="banner_1" />
                     </div>
 
