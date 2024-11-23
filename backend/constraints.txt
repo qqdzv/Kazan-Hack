@@ -1,0 +1,2 @@
+speechkit~=0.0
+yandex-speechkit~=0.0
