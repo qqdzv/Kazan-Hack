@@ -28,7 +28,7 @@ import call from './pages/videoCall/call.vue';
 
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
-// import TestResult from './pages/CameraPage/CameraTest/TestResult.vue';
+import EyeResult from './pages/CameraPage/CameraTest/EyeResult.vue';
 
 const routes = [
     {
@@ -80,7 +80,7 @@ const routes = [
     { path: '/scanReport', component: ScanReportPage },
     { path: '/allDoctors', component: AllDoctorsPage },
     { path: '/videoCall', component: call },
-    // { path: '/testResult', component: TestResult },
+    { path: '/Eye', component: EyeResult },
 ];
 
 const router = createRouter({

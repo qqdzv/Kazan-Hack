@@ -1,19 +1,91 @@
 <script setup lang="ts">
-const props = defineProps<{
-    folder_name: string;
+import { defineProps, defineEmits, ref, watch } from 'vue';
+import MainButton from '@/ui/MainButton.vue';
+import { useRouter } from 'vue-router';
+import api from '@/axios/api';
+const fileInput = ref<HTMLInputElement | null>(null);
+const imageUrl = ref<string | null>(null);
+const router = useRouter();
+
+const folder_name = ref('');
+const image_base64 = ref('');
+const show = ref(false);
+const loading = ref(false);
+
+interface ScanEyeResponse {
+    response: string;
     image_base64: string;
-}>();
+}
+
+const sendEyePhoto = async () => {
+    try {
+        loading.value = true;
+        const rawResponse = await api.postData('/scan/send_eye', {
+            folder_name: 'Мои сканы',
+            image_base64: imageUrl.value,
+        });
+
+        const response = rawResponse as ScanEyeResponse;
+
+        folder_name.value = response.response;
+        image_base64.value = response.image_base64;
+
+        show.value = true;
+    } catch (error) {
+        console.error('Ошибка при отправке фото:', error);
+    }
+    loading.value = false;
+};
+
+const triggerFileInput = () => {
+    fileInput.value?.click();
+};
+
+const onFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+        const file = target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            imageUrl.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    if (fileInput.value) {
+        fileInput.value.value = '';
+    }
+};
 </script>
 
 <template>
     <div class="mainLayout">
         <div class="content-wrapper">
-            <div class="circlePhoto">
+            <MainButton text="Загрузить" @click="triggerFileInput()" type="primary" />
+            <MainButton text="Отправить" @click="sendEyePhoto()" type="secondary" />
+
+            <div v-if="show" class="circlePhoto">
                 <img :src="image_base64" alt="banner_1" />
             </div>
 
-            <h4 class="text-center">{{ props.folder_name }}</h4>
+            <h4 v-if="loading" class="text-center" :style="{ marginTop: '50px' }">Загрузка...</h4>
+
+            <h4 class="text-center">{{ folder_name }}</h4>
         </div>
+
+        <input type="file" accept="image/*" ref="fileInput" class="hidden" :style="{ opacity: '0' }" @change="onFileChange" />
+    </div>
+    <div
+        :style="{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '10px',
+        }"
+    >
+        <MainButton text="Назад" @click="router.go(-1)" type="secondary" :style="{ flex: '1' }" />
     </div>
 </template>
 

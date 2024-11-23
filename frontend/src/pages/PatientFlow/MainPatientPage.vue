@@ -15,7 +15,7 @@
                     <h3>Сканер глаз</h3>
                     <p>Исследуйте Ваши глаза</p>
                 </div>
-                <MainButton text="Сканировать" type="primary" className="btn_2" icon="scan" @click="router.push('/test')" />
+                <MainButton text="Сканировать" type="primary" className="btn_2" icon="scan" @click="router.push('/Eye')" />
                 <img src="/img/homepage/glaz.png" alt="banner_1" />
             </div>
 
@@ -31,7 +31,16 @@
             <div class="banner_3" @click="router.push('/patient/history')">
                 <div class="texts">
                     <div class="head_texts">
-                        <h3>Ваши сканы</h3>
+                        <h3>Мои сканы</h3>
+                    </div>
+                </div>
+                <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
+            </div>
+
+            <div class="banner_3" @click="router.push('/patient/history')">
+                <div class="texts">
+                    <div class="head_texts">
+                        <h3>Протокол консультаций</h3>
                     </div>
                 </div>
                 <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
