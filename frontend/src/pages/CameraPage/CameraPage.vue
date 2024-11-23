@@ -2,9 +2,9 @@
     <main class="testLayout" v-if="!photoSelected">
         <CustomIcon id="logo" :width="207" :height="33" className="logo" />
         <div class="testPage" v-if="isPatient">
-            <TestStep1 v-if="step === 1" v-model:task1="formData.folder_name" @prev-step="handlePrevStep" @next-step="handleNextStep" @skip-test="handleSkipTest" />
-            <TestStep2 v-if="step === 2" v-model:task2="formData.body_part" @next-step="handleNextStep" @prev-step="handlePrevStep" />
-            <TestStep3 v-if="step === 3" v-model:task3="formData.size" @next-step="handleNextStep" @prev-step="handlePrevStep" />
+            <!-- <TestStep1 v-if="step === 1" v-model:task1="formData.folder_name" @prev-step="handlePrevStep" @next-step="handleNextStep" @skip-test="handleSkipTest" /> -->
+            <!-- <TestStep2 v-if="step === 2" v-model:task2="formData.body_part" @next-step="handleNextStep" @prev-step="handlePrevStep" /> -->
+            <!-- <TestStep3 v-if="step === 3" v-model:task3="formData.size" @next-step="handleNextStep" @prev-step="handlePrevStep" /> -->
             <TestStep4 v-if="step === 4" v-model:task4="formData.how_many_days" @next-step="handleNextStep" @prev-step="handlePrevStep" />
             <TestStep5 v-if="step === 5" v-model:task5="formData.have_pain" @next-step="handleNextStep" @prev-step="handlePrevStep" />
             <TestStep6 v-if="step === 6" v-model:task6="formData.have_medicines" @next-step="handleNextStep" @prev-step="handlePrevStep" />

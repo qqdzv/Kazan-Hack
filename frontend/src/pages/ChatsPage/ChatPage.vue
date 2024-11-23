@@ -26,7 +26,7 @@
                     {{ message.created_at ? formatDate(message.created_at).time : '' }}
                 </span>
 
-                <MainButton v-if="message.conference_time" text="Видео встреча" :style="{ backgroundColor: '#D1F3ED', text: '#16C4A4' }" class="btn_1" @click="router.push('/videoCall')" :width="220" />
+                <MainButton v-if="message.conference_time" text="Видео встреча {{ message.conference_time }}" :style="{ backgroundColor: '#D1F3ED', text: '#16C4A4' }" class="btn_1" @click="router.push('/videoCall')" :width="220" />
             </div>
         </main>
 
@@ -204,22 +204,6 @@ const onFileChange = (event: Event) => {
         fileInput.value.value = '';
     }
 };
-
-// const fetchDateCall = async () => {
-//     try {
-//         const response = await api.postData('/messages/conference', {
-//             receiver_id: receiverId.value,
-//             conference_time: '2024-11-23T03:03:23.198Z',
-//         });
-
-//         const conferenceData = response as ConferenceResponse;
-//         isLink.value = conferenceData.have_link;
-//         confTime.value = conferenceData.conference_time;
-//         visible.value = false;
-//     } catch (error) {
-//         console.error(error);
-//     }
-// };
 
 const fetchDateCall = async () => {
     try {
