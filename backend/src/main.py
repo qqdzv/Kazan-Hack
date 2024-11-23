@@ -36,12 +36,12 @@ async def lifespan(app: FastAPI):
     time.sleep(2)
     websocket_task = asyncio.create_task(start_websocket_server())
     scheduler.start()
-    # bot_task = asyncio.create_task(start_tgbot())
+    bot_task = asyncio.create_task(start_tgbot())
     RedisCacheBackend(redis_fastapi)
     yield
     websocket_task.cancel()
-    # bot_task.cancel()
-    # await bot_task
+    bot_task.cancel()
+    await bot_task
 
 app = FastAPI(
     title="Test",
