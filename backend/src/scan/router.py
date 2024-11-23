@@ -620,13 +620,19 @@ async def get_scan_by_id(scan_id : int, info : str = Depends(get_role), session:
         eye_scan = eye_scan_result.scalar_one_or_none()
         skin_scan = skin_scan_result.scalar_one_or_none()
         scan = scan_result.scalar_one_or_none()
-
+        
+        is_eye = False
+        is_skin = False
+        if_scan = False
         if eye_scan:
             result=eye_scan
+            is_eye = True
         elif skin_scan:
             result=skin_scan
+            is_skin = True
         elif scan:
             result=scan
+            is_scan = True
         else:
             result=None
     else:
@@ -638,16 +644,50 @@ async def get_scan_by_id(scan_id : int, info : str = Depends(get_role), session:
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": "Скан с данным id не найден"}
         )
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content={
-            "id": result.id,
-            "image_base64": result.image_base64 if "image_base64" in result.__dict__ else None,
-            "response" : result.response if "response" in result.__dict__ else None,
-            "percent" : result.percent if "percent" in result.__dict__ else None,
-            "type" : result.type if "type" in result.__dict__ else None,
-            "result" : result.result if "result" in result.__dict__ else None,
-            "recommendations": result.recommendations if "recommendations" in result.__dict__ else None,
-            "created_at": result.created_at.isoformat() if isinstance(scan.created_at, datetime) else scan.created_at
-        }
-    ) 
+    
+    if is_eye:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "id": result.id,
+                "scan_type": "eye",
+                "image_base64": result.image_base64 if "image_base64" in result.__dict__ else None,
+                "response" : result.response if "response" in result.__dict__ else None,
+                "percent" : result.percent if "percent" in result.__dict__ else None,
+                "type" : result.type if "type" in result.__dict__ else None,
+                "result" : result.result if "result" in result.__dict__ else None,
+                "recommendations": result.recommendations if "recommendations" in result.__dict__ else None,
+                "created_at": result.created_at.isoformat() if isinstance(scan.created_at, datetime) else scan.created_at
+            }
+        ) 
+    elif is_scan:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "id": result.id,
+                "scan_type": "skin",
+                "image_base64": result.image_base64 if "image_base64" in result.__dict__ else None,
+                "response" : result.response if "response" in result.__dict__ else None,
+                "percent" : result.percent if "percent" in result.__dict__ else None,
+                "type" : result.type if "type" in result.__dict__ else None,
+                "result" : result.result if "result" in result.__dict__ else None,
+                "recommendations": result.recommendations if "recommendations" in result.__dict__ else None,
+                "created_at": result.created_at.isoformat() if isinstance(scan.created_at, datetime) else scan.created_at
+            }
+        ) 
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "id": result.id,
+                "scan_type": "skins",
+                "image_base64": result.image_base64 if "image_base64" in result.__dict__ else None,
+                "response" : result.response if "response" in result.__dict__ else None,
+                "percent" : result.percent if "percent" in result.__dict__ else None,
+                "type" : result.type if "type" in result.__dict__ else None,
+                "result" : result.result if "result" in result.__dict__ else None,
+                "recommendations": result.recommendations if "recommendations" in result.__dict__ else None,
+                "created_at": result.created_at.isoformat() if isinstance(scan.created_at, datetime) else scan.created_at
+            }
+        ) 
+        
