@@ -10,6 +10,7 @@ from src.scan.router import router as router_scan
 from src.doctor.router import router as router_doctor
 from src.messages.router import router as router_messages
 from src.private_api.router import router as router_shared
+from src.medcard.router import router as router_medcard
 from tgbot.bot import dp
 from src.myredis import redis_fastapi
 import asyncio
@@ -54,6 +55,7 @@ app.include_router(router_doctor)
 app.include_router(router_ai)
 app.include_router(router_messages)
 app.include_router(router_shared)
+app.include_router(router_medcard)
 
 origins = [
     "http://127.0.0.1:8000",
