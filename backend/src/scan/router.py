@@ -93,17 +93,17 @@ class ScanSkinNew(BaseModel):
     image_base64 : str
 
 @router.post("/send_skin")
-async def send_eye(new_scan : ScanSkinNew, user: User|None = Depends(get_current_user), session: AsyncSession = Depends(get_async_session)) -> JSONResponse:
+async def send_skin(new_scan : ScanSkinNew, user: User|None = Depends(get_current_user), session: AsyncSession = Depends(get_async_session)) -> JSONResponse:
     if isinstance(user, JSONResponse):
         return user
     
-    new_eye_scan = SkinScan(
+    new_skin_scan = SkinScan(
         sender_id=user.id,
         image_base64=new_scan.image_base64
     )
-    session.add(new_eye_scan)
+    session.add(new_skin_scan)
     await session.commit()  # Подтверждаем изменения в базе данных
-    await session.refresh(new_eye_scan)  # Обновляем экземпляр, чтобы получить новые значения (например, ID)
+    await session.refresh(new_skin_scan)  # Обновляем экземпляр, чтобы получить новые значения (например, ID)
     
     existing_folder = await session.execute(
         select(ScanFolder).filter(
@@ -124,19 +124,19 @@ async def send_eye(new_scan : ScanSkinNew, user: User|None = Depends(get_current
         await session.refresh(existing_folder)  # Обновляем экземпляр, чтобы получить новые значения (например, ID)
         logger.info(f"создаем папку {new_scan.folder_name}")
     
-    new_eye_scan.folder_id = existing_folder.id
+    new_skin_scan.folder_id = existing_folder.id
     
     await session.commit()
     
-    result = await run_in_threadpool(get_skin_answer,image_base64=new_eye_scan.image_base64)
+    result = await run_in_threadpool(get_skin_answer,image_base64=new_skin_scan.image_base64)
 
-    new_eye_scan.response = result
+    new_skin_scan.response = result
     await session.commit()
     
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "id": new_eye_scan.id,
+            "id": new_skin_scan.id,
             "response": result,
             "image_base64" : new_scan.image_base64  
         }
@@ -502,9 +502,9 @@ async def get_all_scans(user: User|None = Depends(get_current_user), session: As
     ]
     
     scans = await session.execute(
-        select(EyeScan).where(
+        select(SkinScan).where(
             and_(
-                EyeScan.sender_id == user.id
+                SkinScan.sender_id == user.id
             )
         )
     )
