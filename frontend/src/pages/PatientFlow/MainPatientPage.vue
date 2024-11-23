@@ -3,7 +3,7 @@
         <section class="banners">
             <div class="banner_1">
                 <div class="texts">
-                    <h3>Сканер рака кожи</h3>
+                    <h3>Сканер кожи</h3>
                     <p>Исследуйте свое тело</p>
                 </div>
                 <MainButton text="Сканировать" type="primary" className="btn_1" icon="scan" @click="router.push('/camera')" />
@@ -19,7 +19,25 @@
                 <img src="/img/homepage/glaz.png" alt="banner_1" />
             </div>
 
-            <div class="folders_banners">
+            <div class="banner_3" @click="router.push('/test')">
+                <div class="texts">
+                    <div class="head_texts">
+                        <h3>Медкарта</h3>
+                    </div>
+                </div>
+                <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
+            </div>
+
+            <div class="banner_3" @click="router.push('/patient/history')">
+                <div class="texts">
+                    <div class="head_texts">
+                        <h3>Ваши сканы</h3>
+                    </div>
+                </div>
+                <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
+            </div>
+
+            <!-- <div class="folders_banners">
                 <div class="banner_3" v-if="folders" v-for="folder in folders" :key="folder.id" @click="router.push({ path: `/patient/folder/${folder.id}` })">
                     <div class="texts">
                         <div class="head_texts">
@@ -30,7 +48,8 @@
                     </div>
                     <CustomIcon id="arrow_right" :width="24" :height="24" className="icon" />
                 </div>
-            </div>
+            </div> -->
+
             <MainButton text="Видео встреча" :style="{ backgroundColor: '#D1F3ED', text: '#16C4A4' }" class="btn_1" @click="router.push('/videoCall')" :width="220" />
         </section>
     </main>

@@ -1,24 +1,44 @@
 <template>
     <div class="step4">
-        <h2>Когда появились жалобы на кожу?</h2>
-        <div class="groupBtns">
-            <MainButton text="< 1 дня" @click="selectAnswer('< 1 дня')" :key="task4Value === '< 1 дня' ? 'male-button' : 'base-male'" :type="task4Value === '< 1 дня' ? 'primary' : 'base'" :style="{ width: '100%' }" />
-            <MainButton text="1 - 7 дней " @click="selectAnswer('1 - 7 дней ')" :key="task4Value === '1 - 7 дней ' ? 'male-button' : 'base-male'" :type="task4Value === '1 - 7 дней ' ? 'primary' : 'base'" :style="{ width: '100%' }" />
-            <MainButton text="1 - 4 недели" @click="selectAnswer('1 - 4 недели')" :key="task4Value === '1 - 4 недели' ? 'male-button' : 'base-male'" :type="task4Value === '1 - 4 недели' ? 'primary' : 'base'" :style="{ width: '100%' }" />
-            <MainButton text="1 - 3 месяца" @click="selectAnswer('1 - 3 месяца')" :key="task4Value === '1 - 3 месяца' ? 'male-button' : 'base-male'" :type="task4Value === '1 - 3 месяца' ? 'primary' : 'base'" :style="{ width: '100%' }" />
-            <MainButton text="Более 3 месяцев" @click="selectAnswer('Более 3 месяцев')" :key="task4Value === 'Более 3 месяцев' ? 'male-button' : 'base-male'" :type="task4Value === 'Более 3 месяцев' ? 'primary' : 'base'" :style="{ width: '100%' }" />
-            <MainButton text="С рождения" @click="selectAnswer('С рождения')" :key="task4Value === 'С рождения' ? 'male-button' : 'base-male'" :type="task4Value === 'С рождения' ? 'primary' : 'base'" :style="{ width: '100%' }" />
+        <h2 v-if="!show">Что вы хотите отсканировать?</h2>
+
+        <div v-if="!show" :style="{ display: 'flex', marginTop: '40px' }">
+            <MainButton text="Родинку" @click="selectAnswer('Родинку')" :class="{ active: selectedOption === 'Родинку' }" type="secondary" />
+
+            <MainButton
+                :style="{ marginLeft: '30px' }"
+                text="Кожу"
+                @click="
+                    selectAnswer('кожу');
+                    triggerFileInput();
+                "
+                :class="{ active: selectedOption === 'кожу' }"
+                type="secondary"
+            />
         </div>
+
+        <TestResult v-if="show" :folder_name="folder_name" :image_base64="image_base64" />
     </div>
     <div class="bottom">
-        <MainButton text="Назад" @click="prevStep" type="secondary" />
-        <MainButton text="Далее" @click="nextStep" type="primary" />
+        <MainButton text="Назад" @click="router.go(-1)" type="secondary" />
+
+        <MainButton v-if="!show" text="Далее" @click="nextStep" type="primary" />
     </div>
+
+    <input type="file" accept="image/*" ref="fileInput" class="hidden" :style="{ opacity: '0' }" @change="onFileChange" />
 </template>
 
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch } from 'vue';
 import MainButton from '@/ui/MainButton.vue';
+import { useRouter } from 'vue-router';
+import api from '@/axios/api';
+import TestResult from './TestResult.vue';
+
+const selectedOption = ref<string | null>(''); // Храним выбранный вариант
+const fileInput = ref<HTMLInputElement | null>(null);
+const imageUrl = ref<string | null>(null);
+const router = useRouter();
 
 defineOptions({
     name: 'TestStep4',
@@ -27,33 +47,89 @@ defineOptions({
 const props = defineProps<{ task4?: string }>();
 const emit = defineEmits(['next-step', 'update:task4', 'prev-step']);
 const task4Value = ref(props.task4 || '');
+const folder_name = ref('');
+const image_base64 = ref('');
+const show = ref(false);
+
+interface ScanResponse {
+    response: string;
+    image_base64: string;
+}
 
 watch(task4Value, (newAnswer) => {
     emit('update:task4', newAnswer);
 });
 
 const selectAnswer = (task: string) => {
+    selectedOption.value = task;
     task4Value.value = task;
 };
 
 const nextStep = () => {
-    if (task4Value.value) {
-        emit('next-step');
+    if (task4Value.value === 'кожу') {
+        sendSkinPhoto();
+    } else {
+        if (task4Value.value) {
+            emit('next-step');
+        }
     }
 };
 
-const prevStep = () => {
-    emit('prev-step');
+const sendSkinPhoto = async () => {
+    try {
+        const rawResponse = await api.postData('/scan/send_skin', {
+            folder_name: 'Мои сканы',
+            image_base64: imageUrl.value,
+        });
+
+        const response = rawResponse as ScanResponse;
+
+        folder_name.value = response.response;
+        image_base64.value = response.image_base64;
+
+        // router.push('/testResult');
+        show.value = true;
+    } catch (error) {
+        console.error('Ошибка при отправке фото:', error);
+    }
+};
+
+const triggerFileInput = () => {
+    // console.log('triggerFileInput called');
+    fileInput.value?.click();
+};
+
+const onFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+        const file = target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            imageUrl.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    if (fileInput.value) {
+        fileInput.value.value = '';
+    }
 };
 </script>
 
 <style lang="scss" scoped>
+.active {
+    background-color: #16c4a4; /* Зеленый цвет для выбранной кнопки */
+    color: white; /* Белый текст */
+}
 .step4 {
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 100%;
     height: 100%;
+    align-items: center;
+    margin-top: 10rem;
     .groupBtns {
         display: flex;
         flex-direction: column;

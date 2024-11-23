@@ -1,6 +1,6 @@
 <template>
     <div class="step7">
-        <h2>
+        <!-- <h2>
             Замечали ли вы <br />
             в родинке смешивание нескольких цветов (коричневый, черный, красный и т.д.)?
         </h2>
@@ -8,11 +8,11 @@
             <MainButton text="Да, несколько цветов" @click="selectAnswer('Да, несколько цветов')" :key="task7Value === 'Да, несколько цветов' ? 'male-button' : 'base-male'" :type="task7Value === 'Да, несколько цветов' ? 'primary' : 'base'" :style="{ width: '100%' }" />
             <MainButton text="Нет, один цвет" @click="selectAnswer('Нет, один цвет')" :key="task7Value === 'Нет, один цвет' ? 'male-button' : 'base-male'" :type="task7Value === 'Нет, один цвет' ? 'primary' : 'base'" :style="{ width: '100%' }" />
             <MainButton text="Не уверен(а)" @click="selectAnswer('Не уверен(а)')" :key="task7Value === 'Не уверен(а)' ? 'male-button' : 'base-male'" :type="task7Value === 'Не уверен(а)' ? 'primary' : 'base'" :style="{ width: '100%' }" />
-        </div>
+        </div> -->
     </div>
     <div class="bottom">
-        <MainButton text="Назад" @click="prevStep" type="secondary" />
-        <MainButton text="Далее" @click="nextStep" type="primary" />
+        <!-- <MainButton text="Назад" @click="prevStep" type="secondary" /> -->
+        <!-- <MainButton text="Загрузить изображение" @click="nextStep" type="primary" /> -->
     </div>
 </template>
 

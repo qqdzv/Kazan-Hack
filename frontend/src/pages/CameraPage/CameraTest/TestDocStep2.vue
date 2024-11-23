@@ -1,6 +1,6 @@
 <template>
     <div class="step2">
-        <h2>Каков твой гендер?</h2>
+        <h2>Каков твой пол?</h2>
         <div class="groupBtns">
             <MainButton text="Мужской" :key="genderValue === 'male' ? 'male-button' : 'base-male'" @click="selectGender('male')" :type="genderValue === 'male' ? 'primary' : 'base'" :width="165" />
             <MainButton text="Женский" @click="selectGender('female')" :key="genderValue === 'male' ? 'male-button' : 'base-male'" :type="genderValue === 'female' ? 'primary' : 'base'" :width="165" />

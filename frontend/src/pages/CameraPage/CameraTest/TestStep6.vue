@@ -1,11 +1,11 @@
 <template>
-    <div class="step6">
+    <!-- <div class="step6">
         <h2>Принимали ли вы какие-либо лекарства в течение последних двух недель?</h2>
         <div class="groupBtns">
             <MainButton text="Нет" :key="task6Value === false ? 'male-button' : 'base-male'" @click="selectAnswer(false)" :type="task6Value === false ? 'primary' : 'base'" :width="165" />
             <MainButton text="Да" @click="selectAnswer(true)" :key="task6Value === true ? 'male-button' : 'base-male'" :type="task6Value === true ? 'primary' : 'base'" :width="165" />
         </div>
-    </div>
+    </div> -->
     <div class="bottom">
         <MainButton text="Назад" @click="prevStep" type="secondary" />
         <MainButton text="Далее" @click="nextStep" type="primary" />

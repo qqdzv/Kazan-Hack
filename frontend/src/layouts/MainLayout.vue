@@ -2,6 +2,7 @@
     <div :class="{ mainLayout: applyStyle }">
         <div class="load" v-if="isLoading">
             <CustomIcon id="logo" :width="207" :height="33" className="logo" />
+            <p>fh</p>
             <h1 v-if="isLoading && userStore.user">
                 Привет, <span>{{ userStore.user?.first_name }}</span>
             </h1>

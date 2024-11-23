@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 
 import TakePhoto from './CameraTest/TakePhoto.vue';
 import TestStep1 from './CameraTest/TestStep1.vue';
@@ -47,7 +47,7 @@ import TestDocStep2 from './CameraTest/TestDocStep2.vue';
 import TestDocStep3 from './CameraTest/TestDocStep3.vue';
 import { Scan } from '@/store/useScansStore';
 
-const step = ref<number>(1);
+const step = ref<number>(4); // Устанавливаем шаг на 4-й, где происходит выбор файла
 const userStore = useUserStore();
 const isPatient = computed(() => (userStore.user?.role === 'user' ? true : false));
 const postResponse = ref<Scan | null>(null);
@@ -57,37 +57,55 @@ const openModal = ref<boolean>(false);
 const imageUrl = ref<string>('');
 const router = useRouter();
 const formData = ref<PostData>({
-    body_part: '',
-    image_base64: '',
-    gender: '',
-    age: '',
+    folder_name: 'Мои сканы', // Заполняем поле с названием папки
+    body_part: 'head/neck', // Заполняем часть тела
+    size: 'string', // Заполняем размер
+    how_many_days: 'string', // Заполняем сколько дней
+    have_pain: true, // Заполняем поле о боли
+    have_medicines: true, // Заполняем поле о лекарствах
+    mixing: 'string', // Заполняем поле с перемешиванием
+    image_base64: '', // Это будет обновляться при загрузке изображения
+    gender: '', // Пока не заполняем
+    age: '', // Пока не заполняем
+});
+
+onMounted(() => {
+    // Заполняем данные формы и устанавливаем шаг сразу на выбор файла
+    formData.value = {
+        folder_name: 'Мои сканы',
+        body_part: 'head/neck',
+        size: 'string',
+        how_many_days: 'string',
+        have_pain: true,
+        have_medicines: true,
+        mixing: 'string',
+        image_base64: '',
+        gender: '',
+        age: '',
+    };
+    step.value = 4; // Устанавливаем шаг на 4-й, где происходит выбор файла
 });
 
 function handleNextStep() {
+    // Переходим сразу к шагу с выбором файла
     if (step.value < 8) {
         if (step.value < 8) {
-            if (isPatient.value) {
-                step.value++;
-            } else {
-                // Если не пациент и на 4 шаге, открыть модальное окно
-                if (step.value === 4) {
-                    openModal.value = true;
-                } else {
-                    step.value++;
-                }
-            }
+            // Пропускаем шаги до выбора файла
+            step.value = 8;
+        } else {
+            // Для следующих шагов выполняем стандартную логику
+            step.value++;
         }
-        if (step.value === 8) {
-            openModal.value = true;
-        }
-        console.log(step.value);
+    }
+    if (step.value === 8) {
+        openModal.value = true;
     }
 }
-function handleSkipTest() {
-    console.log(openModal.value);
 
+function handleSkipTest() {
     openModal.value = true;
 }
+
 function closeModal() {
     openModal.value = false;
 }
@@ -102,8 +120,6 @@ const onFileChange = (event: Event) => {
             imageUrl.value = e.target?.result as string;
         };
         reader.readAsDataURL(file);
-
-        console.log(imageUrl.value);
     }
 };
 
@@ -125,8 +141,6 @@ const handleTestSubmit = () => {
 };
 
 function handlePrevStep() {
-    console.log(step.value);
-
     if (step.value > 1) {
         step.value--;
     } else {

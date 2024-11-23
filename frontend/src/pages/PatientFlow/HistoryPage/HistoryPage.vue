@@ -1,6 +1,6 @@
 <template>
     <main class="folder">
-        <h3>{{ isLoading ? 'Загрузка...' : 'История сканирований' }}</h3>
+        <h3>{{ isLoading ? 'Загрузка...' : 'Мои сканы' }}</h3>
         <div class="scans">
             <div v-for="n in 3" :key="n" class="skeleton-scan" v-if="isLoading">
                 <div class="skeleton skeleton-img"></div>
@@ -9,11 +9,11 @@
                     <div class="skeleton skeleton-text-line small"></div>
                 </div>
             </div>
-            <div v-else v-for="scan in scans" :key="scan.id" class="scan" @click="router.push({path:'/scanReport', query:{scanID: scan.id}})">
+            <div v-else v-for="scan in scans" :key="scan.id" class="scan" @click="router.push({ path: '/scanReport', query: { scanID: scan.id } })">
                 <img :src="scan.image_base64" alt="scan" />
                 <div class="texts">
-                    <h4>{{ extractTextInParentheses(scan.response)}}</h4>
-                    <div class="date"><CustomIcon id="clock" :width="24" :height="24" />  {{ scan?.created_at ? formatDate(scan.created_at).date : '' }}</div>
+                    <h4>{{ extractTextInParentheses(scan.response) }}</h4>
+                    <div class="date"><CustomIcon id="clock" :width="24" :height="24" /> {{ scan?.created_at ? formatDate(scan.created_at).date : '' }}</div>
                 </div>
                 <CustomIcon id="blueArrow" :width="24" :height="24" class="blueArrow" />
             </div>
@@ -49,13 +49,12 @@ const fetchAllScans = async () => {
         console.log(scans.value);
         isLoading.value = false;
     } catch (error) {
-        console.error("Ошибка при загрузке сканов:", error);
+        console.error('Ошибка при загрузке сканов:', error);
         isLoading.value = false; // Убедитесь, что статус загрузки обновляется
     }
 };
 
 onMounted(async () => {
-  
     await fetchAllScans();
 });
 </script>
