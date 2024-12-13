@@ -18,9 +18,6 @@
 - **BACKEND**: FastAPI, Redis, PostgreSQL, SQLAlchemy, Docker
 - **Frontend**: Vue.js PINIA
 
-## **Архитектура и Структура Проекта**
-<img src="images/image3.png" alt="Архитектура" width="1000" height="700">
-
 ## **Демонстрация**
 <img src="images/image4.png" alt="Презентация" width="1000" height="700">
 
