@@ -14,7 +14,7 @@
 5. **Каримов Айдар** (ML-специалист): Работал над созданием чат бота с искуственным интеллектом с медицинским промптом, интеграцией моделей машинного обучения для классификации глазных и кожных заболеваний [Telegram](https://t.me/aidarkarimovvw)
 
 ## **Технологии**
-- **ML**: PyTorch, scikit-learn, Llama3.2 11b
+- **ML**: PyTorch, scikit-learn, Llama3.2 11b, gpt4o, hf transformers
 - **BACKEND**: FastAPI, Redis, PostgreSQL, SQLAlchemy, Docker
 - **Frontend**: Vue.js PINIA
 
